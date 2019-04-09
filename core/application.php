@@ -1,8 +1,12 @@
 <?php
+require_once($_SERVER['DOCUMENT_ROOT'].'/moduleloader.php');
+
 class Application
 {
 	private static $instance;
 	private $eventResolver;
+	
+
 	private function __construct() 
 	{
 
@@ -18,7 +22,10 @@ class Application
 
 	public function initEssentials()
 	{
-		
+		$loader = ModuleLoader::getInstance();
+		foreach (ModuleLoader::ESSENTIALS as $essential) {
+			$loader->loadModule($essential);
+		}
 	}
 
 	public function getEventResolver()
