@@ -2,6 +2,7 @@
 class Application
 {
 	private static $instance;
+	private $eventResolver;
 	private function __construct() 
 	{
 
@@ -22,6 +23,9 @@ class Application
 
 	public function getEventResolver()
 	{
-		return new EventResolver();
+ 		if ($this->eventResolver === null) {
+			$this->eventResolver = new EventResolver();
+		}
+		return $this->eventResolver;
 	}
 }
