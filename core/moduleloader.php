@@ -34,7 +34,7 @@ class ModuleLoader
 	private function classToFilePath($className)
 	{
 		$filename = strtolower($className) . '.php';
-		$filepath = self::MODULE_PATH . $filename;
+		$filepath = $_SERVER['DOCUMENT_ROOT'] . self::MODULE_PATH . $filename;
 		return $filepath;
 	}
 

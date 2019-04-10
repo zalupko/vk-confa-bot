@@ -142,6 +142,9 @@ class UserFactory
   }
 }
 
+/**
+ * @deprecated: есть модуль User для этого.
+ */
 class User
 {
   private $name;

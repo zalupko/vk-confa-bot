@@ -1,5 +1,5 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'].'/moduleloader.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/core/moduleloader.php');
 
 class Application
 {
@@ -34,5 +34,13 @@ class Application
 			$this->eventResolver = new EventResolver();
 		}
 		return $this->eventResolver;
+	}
+	
+	public function getModuleLoader()
+	{
+		if ($this->moduleLoader === null) {
+			$this->moduleLoader = ModuleLoader::getInstance();
+		}
+		return $this->moduleLoader;
 	}
 }
