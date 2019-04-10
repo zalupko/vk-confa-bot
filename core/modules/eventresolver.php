@@ -25,9 +25,4 @@ class EventResolver
 	{
 		return $this->callbackToken;
 	}
-
-	public function eventToModule()
-	{
-		
-	}
 }
