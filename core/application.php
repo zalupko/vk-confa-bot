@@ -1,46 +1,56 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'].'/core/moduleloader.php');
+namespace Core;
+
 
 class Application
 {
-	private static $instance;
-	private $eventResolver;
-	
+    const METHOD = 'messages.send';
+    private $counter;
 
-	private function __construct() 
-	{
+    public function __construct()
+    {
+        DB::createInstance();
+        $this->counter = 0;
+    }
 
-	}
+    public function run()
+    {
+        $longPoll = new LongPolling();
+        $longPoll->getLongPollingServer();
+        while (!$longPoll->checkError()) {
+            $event = $longPoll->getEvent();
+            // Ключ устарел - повторная генерация.
+            if (!$longPoll->checkKey()) {
+                $longPoll->getLongPollingServer();
+                continue;
+            }
+            if (empty($event)) {
+                continue;
+            }
+            $resolver = new EventResolver($event);
+            $resolve = $resolver->resolve();
+            if ($resolve) {
+                $this->sendCompiled($resolve);
+            }
+        }
+    }
 
-	public static function getInstance()
-	{
-		if (self::$instance === null) {
-			self::$instance = new static();
-		}
-		return self::$instance;
-	}
 
-	public function initEssentials()
-	{
-		$loader = ModuleLoader::getInstance();
-		foreach (ModuleLoader::ESSENTIALS as $essential) {
-			$loader->loadModule($essential);
-		}
-	}
+    private function sendCompiled($resolve)
+    {
+        $params = array(
+            'random_id' => mt_rand(),
+            'peer_id' => $resolve['peer_id']
+        );
 
-	public function getEventResolver()
-	{
- 		if ($this->eventResolver === null) {
-			$this->eventResolver = new EventResolver();
-		}
-		return $this->eventResolver;
-	}
-	
-	public function getModuleLoader()
-	{
-		if ($this->moduleLoader === null) {
-			$this->moduleLoader = ModuleLoader::getInstance();
-		}
-		return $this->moduleLoader;
-	}
+        if (!empty($resolve['message'])) {
+            $params['message'] = $resolve['message'];
+        }
+        if (!empty($resolve['attachment'])) {
+            $params['attachment'] = $resolve['attachment'];
+        }
+        $client = new VkClient(VkClient::VK_API_URL, self::METHOD, $params);
+        $client->send();
+
+    }
 }
