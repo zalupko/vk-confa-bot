@@ -5,7 +5,6 @@ use Core\Utils\Debug;
 
 class User
 {
-    const METHOD = 'users.get';
     private static $userPool;
 
     public static function getUserInfo($userId)
@@ -62,7 +61,7 @@ class User
         $params = array(
             'user_id' => $userId
         );
-        $client = new VkClient(VkClient::VK_API_URL, self::METHOD, $params);
+        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_GET_USER, $params);
         $client->send();
         return $client->receive();
     }

@@ -1,8 +1,8 @@
 <?php
 namespace Core;
 
-use Core\Utils\Debug;
-use Core\Utils\Formater;
+use Core\Tools\Debug;
+use Core\Tools\Formater;
 
 class EventResolver
 {
@@ -29,7 +29,12 @@ class EventResolver
         $message = null;
 
         if ($command) {
-            $commandObject = new CommandManager($command['action'], $command['user']);
+			$action = $command['action'];
+			$data = array(
+				'sender_id' => $this->sender_id,
+				'user_id' => $command['user']
+			);
+            $commandObject = new CommandManager($command['action'], $data);
             $execution = $commandObject->act();
             if ($execution) {
                 $message = $execution;
@@ -72,15 +77,12 @@ class EventResolver
         preg_match(self::PREG_USER_PATTERN, $this->text, $user);
         if (empty($user)) {
             return false;
-        } else {
-            list($userId, $userName) = explode(self::USER_SEP, $user[1]);
-            $userId = substr($userId, 2);
-            $user = array(
-                'id' => $userId,
-                'name' => $userName
-            );
-        }
-        return $user;
+        } 
+		list($userId, $userName) = explode(self::USER_SEP, $user[1]);
+        $userId = substr($userId, 2);
+		unset($userName);
+
+        return $userId;
     }
 
     private function parseSmiles()

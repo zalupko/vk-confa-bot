@@ -1,15 +1,13 @@
 <?php
 namespace Core;
 
-use Core\Utils\Debug;
-use Core\Utils\Logger;
+use Core\Tools\VkClient;
 
 class LongPolling
 {
     private $error;
     private $server;
     private $ts;
-    const METHOD = 'groups.getLongPollServer';
     const ACTION = 'a_check';
     const VK_GROUP_ID = 180945331;
 
@@ -18,7 +16,7 @@ class LongPolling
         $params = array(
             'group_id' => self::VK_GROUP_ID
         );
-        $client = new VkClient(VkClient::VK_API_URL, self::METHOD, $params);
+        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_GET_LP, $params);
         $client->send();
         $response = $client->receive();
         $this->server = $response->response;
@@ -38,6 +36,7 @@ class LongPolling
         $event = $client->receive();
         if (isset($event->failed)) {
             $this->error = $event->failed;
+			return null;
         }
         $this->ts = $event->ts;
         $update = $event->updates;
@@ -58,7 +57,7 @@ class LongPolling
     public function checkKey()
     {
         if ($this->error == 3){
-            return true;
+            return false;
         }
         return true;
     }
