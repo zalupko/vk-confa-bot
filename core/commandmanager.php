@@ -3,15 +3,12 @@ namespace Core;
 
 use Core\Commands\Test;
 use Core\Commands\User;
-use Core\Utils\Debug;
 
 class CommandManager
 {
     private $actionPool = array(
-        //'я вот что хотел спросить' => 'FAQ',
-        //'смайлы' => 'SmileList',
-        'тест' => Test::class,
-        'юзер' => User::class,
+        'тест' => TestCommand::class,
+        'юзер' => UserCommand::class,
     );
     private $action;
     private $data;
@@ -26,7 +23,6 @@ class CommandManager
     {
         $action = false;
         foreach ($this->actionPool as $name => $command) {
-            Debug::dump(array($this->action, $name, $command));
             if (strpos($this->action, $name) !== false) {
                 $action = $command;
                 break;
@@ -43,11 +39,11 @@ class CommandManager
         }
         $object = null;
         switch ($command) {
-            case (Test::class):
-                $object = new Test($this->data);
+            case (TestCommand::class):
+                $object = new TestCommand($this->data);
                 break;
-            case (User::class):
-                $object = new User($this->data);
+            case (UserCommand::class):
+                $object = new UserCommand($this->data);
                 break;
             default:
                 break;

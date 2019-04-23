@@ -1,16 +1,16 @@
 <?php
 namespace Core;
 
+use Core\Tools\VkClient;
 
 class Application
 {
-    const METHOD = 'messages.send';
-    private $counter;
+	const INTERFACE_NAME = 'cli';
+	const INTERFACE_ERROR = 'Script cannot be executed not from CLI';
 
     public function __construct()
     {
         DB::createInstance();
-        $this->counter = 0;
     }
 
     public function run()
@@ -49,8 +49,15 @@ class Application
         if (!empty($resolve['attachment'])) {
             $params['attachment'] = $resolve['attachment'];
         }
-        $client = new VkClient(VkClient::VK_API_URL, self::METHOD, $params);
+        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_SEND_MESSAGE, $params);
         $client->send();
 
     }
+
+	public function checkInterface()
+	{
+		if (php_sapi_name() != self::INTERFACE_NAME) {
+			throw new \Exception(self::INTERFACE_ERROR);
+		}
+	}
 }

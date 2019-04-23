@@ -13,6 +13,7 @@ class Upgrader
         $version = intval(file_get_contents(self::VERSION_FILE));
         if ($version < self::CURRENT_VERSION) {
             try {
+
                 DB::createInstance();
                 $connection = DB::getInstance()->getConnection();
                 $template = 'INSERT INTO vcb_smiles (SMILE_NAME, SMILE_PATH) VALUES ("%s", "%s");';
@@ -42,6 +43,7 @@ class Upgrader
                     }
                 }
                 self::setVersion(self::CURRENT_VERSION);
+
             } catch (\Exception $Error) {
                 echo 'Failed to upgrade from '.$version.' to '.self::CURRENT_VERSION.PHP_EOL;
                 echo 'Exception: '.$Error->getMessage();

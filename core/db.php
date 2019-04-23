@@ -1,9 +1,9 @@
 <?php
 namespace Core;
 
-use Core\Utils\Config;
-use Core\Utils\Debug;
-use \Exception;
+use Core\Tools\Config;
+use Core\Tools\Debug;
+
 class DB
 {
     private static $instance;
@@ -15,8 +15,8 @@ class DB
         $host = Config::getOption('DBHOST');
         $login = Config::getOption('DBLOGIN');
         $password = Config::getOption('DBPASS');
+		$this->dbName = Config::getOption('DBNAME');
         $this->connection = new \mysqli($host, $login, $password);
-        $this->dbName = Config::getOption('DBNAME');
     }
 
     public function getConnection()
@@ -32,7 +32,7 @@ class DB
     public static function getInstance()
     {
         if (self::$instance === null) {
-            throw new Exception('Create instance of Database first');
+            throw new \Exception('Create instance of Database first');
         }
         return self::$instance;
     }
@@ -55,7 +55,6 @@ class DB
             $this->createTables();
             $this->fillTablesWithValues();
         }
-        $this->connection->select_db($this->dbName);
     }
 
     private function createTables()

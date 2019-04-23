@@ -1,7 +1,7 @@
 <?php
 namespace Core\Commands;
 
-class Test extends Command
+class TestCommand extends Command
 {
     protected $data;
     public function __construct($data)
