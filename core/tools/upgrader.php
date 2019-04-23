@@ -12,7 +12,6 @@ class Upgrader
     {
         $version = intval(file_get_contents(self::VERSION_FILE));
         if ($version < 101) {
-            DB::createInstance();
             $connection = DB::getInstance()->getConnection();
             $template = 'INSERT INTO vcb_smiles (SMILE_NAME, SMILE_PATH) VALUES ("%s", "%s");';
             $newSmiles = array(
@@ -41,6 +40,31 @@ class Upgrader
                 }
             }
             self::setVersion($version, 101);
+        }
+
+        if ($version < 102) {
+            $connection = DB::getInstance()->getConnection();
+            $table = 'CREATE TABLE IF NOT EXISTS vcb_phrases 
+                (
+                    ID INTEGER AUTO_INCREMENT PRIMARY KEY,
+                    PHRASE_TYPE VARCHAR(255) NOT NULL,
+                    PHRASE_CONTEXT TEXT
+                );';
+            $connection->query($table);
+            Debug::dump($connection->error);
+            $template = 'INSERT INTO vcb_phrases (PHRASE_TYPE, PHRASE_CONTEXT) VALUES ("%s", "%s");';
+            $phrases = array(
+                'SCYTHE_WIN' => 'коса #attacker# залетела ЧЕТКО В ЖБАН #defender#',
+                'SCYTHE_LOSS' => 'коса #attacker# залетела ЧЕТКО В ЛОТУС #defender#'
+            );
+            foreach ($phrases as $phraseType => $phraseContext) {
+                $query = sprintf($template, $phraseType, $phraseContext);
+                if ($connection->query($query) === false) {
+                    Debug::dump($connection->error);
+                    throw new \Exception('Failed to update DB from '.$version);
+                }
+            }
+            self::setVersion($version, 102);
         }
     }
 

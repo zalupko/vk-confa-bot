@@ -3,12 +3,14 @@ namespace Core;
 
 use Core\Commands\TestCommand;
 use Core\Commands\UserCommand;
+use Core\Commands\ScytheCommand;
 
 class CommandManager
 {
     private $actionPool = array(
         'тест' => TestCommand::class,
         'юзер' => UserCommand::class,
+        'коса' => ScytheCommand::class
     );
     private $action;
     private $data;
@@ -44,6 +46,9 @@ class CommandManager
                 break;
             case (UserCommand::class):
                 $object = new UserCommand($this->data);
+                break;
+            case (ScytheCommand::class):
+                $object = new ScytheCommand($this->data);
                 break;
             default:
                 break;

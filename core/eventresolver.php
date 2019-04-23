@@ -1,24 +1,28 @@
 <?php
 namespace Core;
 
+use Core\User;
 use Core\Tools\Formater;
 
 class EventResolver
 {
     const COMMAND_PREFIX = 'конфа';
     const PREG_SMILE_PATTERN = '/:(.*):/';
-    const PREG_USER_PATTERN = '/\[(.*)\]+/';
+    const PREG_USER_PATTERN = '/.*\[(.*)\]+/';
     const USER_SEP = '|';
 
     private $text;
     private $sender_id;
     private $peer_id;
+    private $date;
 
     public function __construct($event)
     {
         $this->text = Formater::tolower($event->object->text);
         $this->sender_id = $event->object->from_id;
         $this->peer_id = $event->object->peer_id;
+        $this->date = $event->object->date;
+        $this->updateTimestamp($this->sender_id, $this->date);
     }
 
     public function resolve()
@@ -30,10 +34,11 @@ class EventResolver
         if ($command) {
 			$action = $command['action'];
 			$data = array(
+			    'date' => $this->date,
 				'sender_id' => $this->sender_id,
 				'user_id' => $command['user']
 			);
-            $commandObject = new CommandManager($command['action'], $data);
+            $commandObject = new CommandManager($action, $data);
             $execution = $commandObject->act();
             if ($execution) {
                 $message = $execution;
@@ -108,5 +113,13 @@ class EventResolver
             $attachments[] = $smile['SMILE_PATH'];
         }
         return implode(',', $attachments);
+    }
+
+    private function updateTimestamp($userId, $date)
+    {
+        $data = array(
+            'USER_LAST_MESSAGE' => $date
+        );
+        User::updateUserInfo($this->sender_id, $data);
     }
 }

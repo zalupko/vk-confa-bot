@@ -14,4 +14,13 @@ class Formater
     {
         return \mb_strtoupper($string, self::ENCODING);
     }
+
+    public static function replacePlaceholders($string, $placeholders)
+    {
+        foreach ($placeholders as $holder => $value) {
+            $holder = '#'.$holder.'#';
+            $string = str_replace($holder, $value, $string);
+        }
+        return $string;
+    }
 }

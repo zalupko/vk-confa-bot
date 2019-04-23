@@ -39,7 +39,7 @@ class User
         );
         $connection = DB::getInstance()->getConnection();
         $connection->query($query);
-        $id = array_shift($preparedInfo);
+        $id = $preparedInfo['VK_USER_ID'];
         self::$userPool[$id] = $preparedInfo;
     }
 
@@ -49,7 +49,6 @@ class User
         $query = sprintf('SELECT * FROM vcb_users WHERE VK_USER_ID = "%s";', $userId);
         $userInfo = $connection->query($query)->fetch_assoc();
         if ($userInfo) {
-            Debug::dump($userInfo);
             $id = $userInfo['VK_USER_ID'];
             self::$userPool[$id] = $userInfo;
         }
@@ -64,5 +63,21 @@ class User
         $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_GET_USER, $params);
         $client->send();
         return $client->receive();
+    }
+
+    public static function updateUserInfo($userId, $userInfo)
+    {
+        if (empty($userInfo) || empty($userId)) {
+            return false;
+        }
+        $connection = DB::getInstance()->getConnection();
+        $query = 'UPDATE vcb_users SET ';
+        foreach ($userInfo as $column => $value) {
+            $query .= $column.' = "'.$value.'"';
+        }
+        $query .= ' WHERE VK_USER_ID = "'.$userId.'"';
+        if ($connection->query($query) === false) {
+            throw new \Exception('Failed to update user info');
+        }
     }
 }
