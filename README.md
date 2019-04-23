@@ -1,4 +1,4 @@
-#VKConfaBot
+# VKConfaBot
 Open Source Community Bot for VK
 Регистронезависим, использует MySQL, имеет собственный lightweight VkClient.
 Хардкоженность некоторых элементов будет исправлена в последующих обновлениях
