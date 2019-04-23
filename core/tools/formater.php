@@ -1,5 +1,5 @@
 <?php
-namespace Core\Utils;
+namespace Core\Tools;
 
 class Formater
 {
