@@ -2,7 +2,6 @@
 namespace Core;
 
 use Core\Tools\Config;
-use Core\Tools\Debug;
 
 class DB
 {
@@ -27,7 +26,7 @@ class DB
     /**
      * Singleton getter. Instantiate it with createInstance first
      * @return DB
-     * @throws Exception
+     * @throws \Exception
      */
     public static function getInstance()
     {

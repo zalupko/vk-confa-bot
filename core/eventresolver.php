@@ -1,7 +1,6 @@
 <?php
 namespace Core;
 
-use Core\Tools\Debug;
 use Core\Tools\Formater;
 
 class EventResolver

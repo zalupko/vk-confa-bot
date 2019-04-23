@@ -1,7 +1,7 @@
 <?php
 namespace Core;
 
-use Core\Utils\Debug;
+use Core\Tools\VkClient;
 
 class User
 {

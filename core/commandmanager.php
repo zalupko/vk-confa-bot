@@ -1,8 +1,8 @@
 <?php
 namespace Core;
 
-use Core\Commands\Test;
-use Core\Commands\User;
+use Core\Commands\TestCommand;
+use Core\Commands\UserCommand;
 
 class CommandManager
 {
