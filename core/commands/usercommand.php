@@ -1,7 +1,7 @@
 <?php
 namespace Core\Commands;
 
-use Core\Utils\Debug;
+use Core\User;
 
 class UserCommand extends Command
 {
@@ -17,7 +17,7 @@ class UserCommand extends Command
         if (!isset($data['user_id'])) {
             return false;
         }
-        $info = \Core\User::getUserInfo($data['user_id']);
+        $info = User::getUserInfo($data['user_id']);
         return json_encode($info);
     }
 }

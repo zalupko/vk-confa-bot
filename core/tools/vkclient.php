@@ -20,7 +20,7 @@ class VkClient
     private $params;
     private $url;
     private $response;
-    private $default;
+    private $auth;
 
     public function __construct($url, $method = '', $params = array(), $auth = true)
     {

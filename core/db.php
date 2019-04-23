@@ -75,7 +75,7 @@ class DB
                 ID INTEGER AUTO_INCREMENT PRIMARY KEY,
                 RANK_NAME VARCHAR(255) NOT NULL,
                 RANK_PTS_REQ INTEGER
-            );'
+            );',
         );
         foreach ($tables as $table) {
             $this->connection->query($table);
