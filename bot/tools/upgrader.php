@@ -1,8 +1,8 @@
 <?php
 
-namespace Core\Tools;
+namespace Bot\Tools;
 
-use Core\DB;
+use Bot\DB;
 
 class Upgrader
 {

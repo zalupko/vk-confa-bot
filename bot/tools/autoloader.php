@@ -1,5 +1,5 @@
 <?php
-namespace Core\Tools;
+namespace Bot\Tools;
 
 class Loader
 {

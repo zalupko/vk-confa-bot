@@ -1,8 +1,8 @@
 <?php
-namespace Core;
+namespace Bot;
 
-use Core\User;
-use Core\Tools\Formater;
+use Bot\User;
+use Bot\Tools\Formater;
 
 class EventResolver
 {

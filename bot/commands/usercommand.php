@@ -1,7 +1,7 @@
 <?php
-namespace Core\Commands;
+namespace Bot\Commands;
 
-use Core\User;
+use Bot\User;
 
 class UserCommand extends Command
 {

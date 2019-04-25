@@ -1,5 +1,5 @@
 <?php
-namespace Core\Commands;
+namespace Bot\Commands;
 
 class TestCommand extends Command
 {

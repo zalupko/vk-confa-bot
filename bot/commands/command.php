@@ -1,5 +1,5 @@
 <?php
-namespace Core\Commands;
+namespace Bot\Commands;
 
 abstract class Command
 {

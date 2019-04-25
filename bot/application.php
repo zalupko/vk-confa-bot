@@ -1,8 +1,13 @@
 <?php
-namespace Core;
+namespace Bot;
 
-use Core\Tools\VkClient;
+use Bot\Tools\VkClient;
 
+/**
+ * Class Application
+ * @throws \Exception;
+ * @package Bot
+ */
 class Application
 {
 	const INTERFACE_NAME = 'cli';

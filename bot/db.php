@@ -1,7 +1,7 @@
 <?php
-namespace Core;
+namespace Bot;
 
-use Core\Tools\Config;
+use Bot\Tools\Config;
 
 class DB
 {

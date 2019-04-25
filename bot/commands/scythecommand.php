@@ -1,9 +1,9 @@
 <?php
-namespace Core\Commands;
+namespace Bot\Commands;
 
-use Core\User;
-use Core\DB;
-use Core\Tools\Formater;
+use Bot\User;
+use Bot\DB;
+use Bot\Tools\Formater;
 
 class ScytheCommand extends Command
 {

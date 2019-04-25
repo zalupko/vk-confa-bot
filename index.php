@@ -1,10 +1,10 @@
 <?php
 ini_set('display_errors', 'On');
-use Core\Application;
-use Core\DB;
-use Core\Tools\Logger;
-use Core\Tools\Upgrader;
-require_once('core/tools/autoloader.php');
+use Bot\Application;
+use Bot\DB;
+use Bot\Tools\Logger;
+use Bot\Tools\Upgrader;
+require_once('bot/tools/autoloader.php');
 
 $application = new Application();
 try {

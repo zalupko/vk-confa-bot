@@ -1,7 +1,7 @@
 <?php
-namespace Core;
+namespace Bot;
 
-use Core\Tools\VkClient;
+use Bot\Tools\VkClient;
 
 class User
 {

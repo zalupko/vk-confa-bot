@@ -1,9 +1,9 @@
 <?php
-namespace Core;
+namespace Bot;
 
-use Core\Commands\TestCommand;
-use Core\Commands\UserCommand;
-use Core\Commands\ScytheCommand;
+use Bot\Commands\TestCommand;
+use Bot\Commands\UserCommand;
+use Bot\Commands\ScytheCommand;
 
 class CommandManager
 {
