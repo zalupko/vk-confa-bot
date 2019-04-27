@@ -1,12 +1,14 @@
 <?php
 namespace Bot\ORM;
 
+use Bot\ORM\Errors\SqlConnectionException;
+use Bot\ORM\Errors\SqlQueryException;
 use mysqli;
 use Bot\Tools\Config;
 use Bot\ORM\Tables\Table;
 
 /**
- * Class DB
+ * Class DB - Controls Database
  * @var mysqli $connection - database connection instance
  * @package Bot\ORM
  */
@@ -16,6 +18,7 @@ class DB
     private static $connection;
     private static $dbname;
     private static $tables_cache;
+    private static $exists = false;
 
     /**
      * @return mysqli MySQL connection instance
@@ -39,13 +42,13 @@ class DB
         );
         self::$connection = new mysqli($data['HOST'], $data['LOGIN'], $data['PASSWORD']);
         if (self::$connection->connect_error !== null) {
-            throw new \Exception(
+            throw new SqlConnectionException(
                 self::$connection->connect_error,
                 self::$connection->connect_errno
             );
         }
         self::$dbname = $data['DBNAME'];
-        self::$connection->select_db(self::$dbname);
+        self::$exists = self::selectDatabase();
     }
 
     public static function disconnect()
@@ -62,20 +65,36 @@ class DB
                 'error' => $connection->error,
                 'code' => $connection->errno
             );
-            return new Error($error);
+            return new SqlQueryException($error);
         }
         return $fetch;
+    }
+
+    public static function selectDatabase()
+    {
+        if (!self::$exists) {
+            $query = 'CREATE DATABASE IF NOT EXISTS '.self::$dbname;
+            self::query($query);
+        }
+        return self::$connection->select_db(self::$dbname);
     }
 
     public static function table($tableName)
     {
         if (!isset(self::$tables_cache[$tableName])) {
-            $table = new $tableName();
-            if (!($table instanceof Table)) {
+            if (!is_subclass_of($tableName, Table::class, true)) {
                 throw new \Exception(self::NOT_TABLE_CLASSNAME);
             }
+            $table = new $tableName();
             self::$tables_cache[$tableName] = $table;
         }
         return self::$tables_cache[$tableName];
+    }
+
+    public static function drop()
+    {
+        self::getConnection();
+        $query = 'DROP DATABASE '.self::$dbname;
+        self::$connection->query($query);
     }
 }

@@ -4,13 +4,29 @@ namespace Bot\ORM\Entities;
 abstract class Entity
 {
     protected $data;
+    protected $id;
+    protected $table;
 
-    protected function __construct($data)
+    protected function __construct($data, $table)
     {
         $this->data = $data;
+        $this->table = $table;
     }
 
-    abstract public function get($column);
-    abstract public function set($column, $value);
-    abstract public function save();
+    public function get($column)
+    {
+        return $this->data[$column];
+    }
+
+    public function set($column, $value)
+    {
+        $this->data[$column] = $value;
+        return $this;
+    }
+
+    public function save()
+    {
+        $data = $this->table->update($this->id, $this->data);
+        $this->data = $data;
+    }
 }
