@@ -4,7 +4,6 @@ namespace Bot;
 use Bot\Commands\SmilesListCommand;
 use Bot\Commands\TestCommand;
 use Bot\Commands\ScytheCommand;
-use Bot\Tools\Logger;
 
 class CommandManager
 {
@@ -41,7 +40,6 @@ class CommandManager
             return false;
         }
         $object = null;
-        Logger::log('Received "'.$command.'" from EventResolver', Logger::DEBUG);
 
         switch ($command) {
             case (TestCommand::class):
