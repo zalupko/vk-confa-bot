@@ -1,14 +1,17 @@
 <?php
 namespace Bot;
 
-use Bot\User;
+use Bot\ORM\DB;
+use Bot\Orm\Tables\Smiles;
+use Bot\ORM\Tables\User;
+use Bot\Tools\Debug;
 use Bot\Tools\Formater;
 
 class EventResolver
 {
     const COMMAND_PREFIX = 'конфа';
     const PREG_SMILE_PATTERN = '/:(.*):/';
-    const PREG_USER_PATTERN = '/.*\[(.*)\]+/';
+    const PREG_USER_PATTERN = '/.*\[(.*)\|(.*)\]+/';
     const USER_SEP = '|';
 
     private $text;
@@ -22,7 +25,6 @@ class EventResolver
         $this->sender_id = $event->object->from_id;
         $this->peer_id = $event->object->peer_id;
         $this->date = $event->object->date;
-        $this->updateTimestamp($this->sender_id, $this->date);
     }
 
     public function resolve()
@@ -55,6 +57,7 @@ class EventResolver
             'message' => $message,
             'attachment' => $attachments
         );
+        $this->updateTimestamp($this->sender_id, $this->date);
         return $resolved;
     }
 
@@ -81,10 +84,10 @@ class EventResolver
         preg_match(self::PREG_USER_PATTERN, $this->text, $user);
         if (empty($user)) {
             return false;
-        } 
-		list($userId, $userName) = explode(self::USER_SEP, $user[1]);
+        }
+		list($fullInfo, $userId, $userName) = $user;
         $userId = substr($userId, 2);
-		unset($userName);
+		unset($userName, $fullInfo);
 
         return $userId;
     }
@@ -101,25 +104,18 @@ class EventResolver
         if (empty($smiles)) {
             return false;
         }
-        $connection = DB::getInstance()->getConnection();
-        $query = 'SELECT SMILE_PATH FROM vcb_smiles WHERE ';
-        foreach ($smiles as &$smile) {
-            $smile = 'SMILE_NAME = "' . $smile . '"';
-        }
-        $query .= implode(' OR ', $smiles);
         $attachments = array();
-        $dbSmiles = $connection->query($query);
-        while ($smile = $dbSmiles->fetch_assoc()) {
-            $attachments[] = $smile['SMILE_PATH'];
+        $ormSmiles = DB::table(Smiles::class);
+        $smileObjects = $ormSmiles->fetchMany(Smiles::SMILE_NAME, $smiles);
+        foreach ($smileObjects as $smileObject) {
+            $attachments[] = $smileObject->get(Smiles::SMILE_PATH);
         }
         return implode(',', $attachments);
     }
 
     private function updateTimestamp($userId, $date)
     {
-        $data = array(
-            'USER_LAST_MESSAGE' => $date
-        );
-        User::updateUserInfo($this->sender_id, $data);
+        $object = UserManager::getUserInfo($userId);
+        $object->set(User::LAST_MESSAGE_TIMESTAMP, $date)->save();
     }
 }

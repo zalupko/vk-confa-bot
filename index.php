@@ -1,7 +1,6 @@
 <?php
 ini_set('display_errors', 'On');
 use Bot\Application;
-use Bot\DB;
 use Bot\Tools\Logger;
 use Bot\Tools\Upgrader;
 require_once('bot/tools/autoloader.php');
@@ -13,5 +12,4 @@ try {
     $application->run();
 } catch (Exception $Error) {
     Logger::log($Error->getMessage());
-    DB::getInstance()->getConnection()->close();
 }

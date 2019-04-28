@@ -1,6 +1,9 @@
 <?php
 namespace Bot\Commands;
 
+use Bot\ORM\Tables\User;
+use Bot\UserManager;
+
 class TestCommand extends Command
 {
     protected $data;
@@ -11,6 +14,12 @@ class TestCommand extends Command
 
     public function execute()
     {
-        return 'хуест';
+        $sender = UserManager::getUserInfo($this->data['sender_id']);
+        return $sender->get(User::VK_USER_NAME);
+    }
+
+    public function checkCooldown($last, $current)
+    {
+        return true;
     }
 }

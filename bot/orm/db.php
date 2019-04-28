@@ -1,9 +1,9 @@
 <?php
 namespace Bot\ORM;
 
+use mysqli;
 use Bot\ORM\Errors\SqlConnectionException;
 use Bot\ORM\Errors\SqlQueryException;
-use mysqli;
 use Bot\Tools\Config;
 use Bot\ORM\Tables\Table;
 
@@ -73,12 +73,17 @@ class DB
     public static function selectDatabase()
     {
         if (!self::$exists) {
-            $query = 'CREATE DATABASE IF NOT EXISTS '.self::$dbname;
+            $query = 'CREATE DATABASE '.self::$dbname.' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;';
             self::query($query);
         }
         return self::$connection->select_db(self::$dbname);
     }
 
+    /**
+     * @param $tableName
+     * @return Table
+     * @throws \Exception
+     */
     public static function table($tableName)
     {
         if (!isset(self::$tables_cache[$tableName])) {

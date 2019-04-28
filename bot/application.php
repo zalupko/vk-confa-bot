@@ -1,6 +1,7 @@
 <?php
 namespace Bot;
 
+use Bot\ORM\DB;
 use Bot\Tools\VkClient;
 
 /**
@@ -15,7 +16,7 @@ class Application
 
     public function __construct()
     {
-        DB::createInstance();
+        DB::getConnection();
     }
 
     public function run()
@@ -65,4 +66,9 @@ class Application
 			throw new \Exception(self::INTERFACE_ERROR);
 		}
 	}
+
+	public function __destruct()
+    {
+        DB::disconnect();
+    }
 }

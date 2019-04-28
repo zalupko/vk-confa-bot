@@ -2,14 +2,12 @@
 namespace Bot;
 
 use Bot\Commands\TestCommand;
-use Bot\Commands\UserCommand;
 use Bot\Commands\ScytheCommand;
 
 class CommandManager
 {
     private $actionPool = array(
         'тест' => TestCommand::class,
-        'юзер' => UserCommand::class,
         'коса' => ScytheCommand::class
     );
     private $action;
@@ -43,9 +41,6 @@ class CommandManager
         switch ($command) {
             case (TestCommand::class):
                 $object = new TestCommand($this->data);
-                break;
-            case (UserCommand::class):
-                $object = new UserCommand($this->data);
                 break;
             case (ScytheCommand::class):
                 $object = new ScytheCommand($this->data);

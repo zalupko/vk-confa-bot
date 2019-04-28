@@ -2,75 +2,53 @@
 
 namespace Bot\Tools;
 
-use Bot\DB;
+use Bot\ORM\DB;
+use Bot\ORM\Tables\Options;
+use Bot\ORM\Tables\Responses;
+use Bot\ORM\Tables\Smiles;
+use Bot\ORM\Tables\Ratings;
 
 class Upgrader
 {
     const VERSION_FILE = 'version.txt';
+    private static $versionObject;
+
+    private static function checkVersion($dbVersion)
+    {
+        $version = Config::getOption('BOT_VERSION');
+        var_dump($version, $dbVersion);
+        if ($dbVersion === null) {
+            return true;
+        }
+        return $version < $dbVersion;
+    }
 
     public static function doUpgrade()
     {
-        $version = intval(file_get_contents(self::VERSION_FILE));
-        if ($version < 101) {
-            $connection = DB::getInstance()->getConnection();
-            $template = 'INSERT INTO vcb_smiles (SMILE_NAME, SMILE_PATH) VALUES ("%s", "%s");';
-            $newSmiles = array(
-                ':jukwow:' => 'photo-180945331_456239060',
-                ':mafacemasol:' => 'photo-180945331_456239061',
-                ':goblinnoice:' => 'photo-180945331_456239062',
-                ':communisticsreaming:' => 'photo-180945331_456239063',
-                ':horrorgadza:' => 'photo-180945331_456239064',
-                ':ohmy:' => 'photo-180945331_456239065',
-                ':gooslya:' => 'photo-180945331_456239066',
-                ':hereicome:' => 'photo-180945331_456239067',
-                ':soundofyoura:' => 'photo-180945331_456239068',
-                ':goblinha:' => 'photo-180945331_456239070',
-                ':goblintea:' => 'photo-180945331_456239071',
-                ':necrorofl:' => 'photo-180945331_456239072',
-                ':vashezdorovie:' => 'photo-180945331_456239073',
-                ':pgg:' => 'photo-180945331_456239074',
-                ':old:' => 'photo-180945331_456239075',
-                ':чай:' => 'photo-180945331_456239078'
-            );
-            foreach ($newSmiles as $name => $link) {
-                $query = sprintf($template, $name, $link);
-                $connection->query($query);
-                if ($connection->error) {
-                    throw new \Exception($connection->error);
-                }
-            }
-            self::setVersion($version, 101);
-        }
+        $options = DB::table(Options::class);
+        self::$versionObject = $options->fetchSingle(Options::OPTION_NAME, 'BOT_VERSION');
 
-        if ($version < 102) {
-            $connection = DB::getInstance()->getConnection();
-            $table = 'CREATE TABLE IF NOT EXISTS vcb_phrases 
-                (
-                    ID INTEGER AUTO_INCREMENT PRIMARY KEY,
-                    PHRASE_TYPE VARCHAR(255) NOT NULL,
-                    PHRASE_CONTEXT TEXT
-                );';
-            $connection->query($table);
-            Debug::dump($connection->error);
-            $template = 'INSERT INTO vcb_phrases (PHRASE_TYPE, PHRASE_CONTEXT) VALUES ("%s", "%s");';
-            $phrases = array(
-                'SCYTHE_WIN' => 'коса #attacker# залетела ЧЕТКО В ЖБАН #defender#',
-                'SCYTHE_LOSS' => 'коса #attacker# залетела ЧЕТКО В ЛОТУС #defender#'
+        $version = self::$versionObject->get(Options::OPTION_VALUE);
+        if (self::checkVersion($version)) {
+            return true;
+        }
+        if ($version < 100) {
+            // Empty upgrader body because version 1.0.0 is installed within install.php
+            self::setVersion(100);
+        }
+        if ($version < 101) {
+            $responses = DB::table(Responses::class);
+            $data = array(
+                Responses::RESPONSE_TYPE => 'SCYTHE_COOLDOWN',
+                Responses::RESPONSE_CONTEXT => 'Косу можно использовать раз в 15 секунд. Подожди #cooldown# секунд'
             );
-            foreach ($phrases as $phraseType => $phraseContext) {
-                $query = sprintf($template, $phraseType, $phraseContext);
-                if ($connection->query($query) === false) {
-                    Debug::dump($connection->error);
-                    throw new \Exception('Failed to update DB from '.$version);
-                }
-            }
-            self::setVersion($version, 102);
+            $responses->add($data);
+            self::setVersion(101);
         }
     }
 
-    private static function setVersion(&$oldVersion, $newVersion)
+    private static function setVersion($version)
     {
-        $oldVersion = $newVersion;
-        file_put_contents(self::VERSION_FILE, $oldVersion);
+        self::$versionObject->set(Options::OPTION_VALUE, $version)->save();
     }
 }

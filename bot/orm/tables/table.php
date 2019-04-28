@@ -2,6 +2,7 @@
 namespace Bot\ORM\Tables;
 
 use Bot\ORM\DB;
+use Bot\ORM\Entities\Entity;
 use Bot\ORM\Errors\SqlQueryException;
 
 class Table
@@ -12,7 +13,7 @@ class Table
 
     public function fetchSingle($column, $value)
     {
-        $template = 'SELECT * FROM %s WHERE %s = "%s"';
+        $template = "SELECT * FROM %s WHERE %s = '%s';";
         $query = sprintf($template, $this->table_name, $column, $value);
         $fetch = DB::query($query);
         if ($fetch instanceof SqlQueryException) {
@@ -51,7 +52,7 @@ class Table
     public function update($id, $data)
     {
         $queryTemplate = 'UPDATE %s SET %s WHERE %s';
-        $qualTemplate = '%s = "%s"';
+        $qualTemplate = "%s = '%s'";
         $updates = array();
         foreach ($data as $column => $item) {
             $updates[] = sprintf($qualTemplate, $column, $item);
@@ -66,6 +67,11 @@ class Table
         return $data;
     }
 
+    /**
+     * @param $data
+     * @return Entity added row as ORM entity
+     * @throws SqlQueryException
+     */
     public function add($data)
     {
         $template = 'INSERT INTO %s (%s) VALUES (%s);';
@@ -73,7 +79,7 @@ class Table
         $values = array();
         foreach ($data as $column => $value) {
             $columns[] = $column;
-            $values[] = '"'.$value.'"';
+            $values[] = "'".$value."'";
         }
         $columns = implode(', ', $columns);
         $values = implode(', ', $values);
