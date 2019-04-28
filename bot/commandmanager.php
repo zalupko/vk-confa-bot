@@ -12,9 +12,7 @@ class CommandManager
         'тест' => TestCommand::class,
         'коса' => ScytheCommand::class,
         'смайлы' => SmilesListCommand::class,
-        'перегрев' => ExitCommand::class
     );
-    public static $exitSignal;
     private $action;
     private $data;
 
@@ -57,10 +55,6 @@ class CommandManager
                 break;
             case (SmilesListCommand::class):
                 $object = new SmilesListCommand($this->data);
-                break;
-            case (ExitCommand::class):
-                $object = new ExitCommand($this->data);
-                self::$exitSignal = ExitCommand::$exit;
                 break;
             default:
                 break;
