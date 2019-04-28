@@ -57,7 +57,6 @@ class Application
         }
         $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_SEND_MESSAGE, $params);
         $client->send();
-
     }
 
 	public function checkInterface()

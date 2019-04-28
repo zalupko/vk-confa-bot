@@ -19,7 +19,10 @@ class SmilesListCommand extends Command
         foreach ($smileList as $smile) {
             $response[] = $smile->get(Smiles::SMILE_NAME);
         }
-        $response = implode("\n", $response);
+        $response = array(
+            'message' => implode("\n", $response),
+            'attachments' => null
+        );
         return $response;
     }
 

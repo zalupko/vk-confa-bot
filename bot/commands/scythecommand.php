@@ -70,6 +70,10 @@ class ScytheCommand extends Command
         }
         //endregion
         $responseText = Formater::replacePlaceholders($response->get(Responses::RESPONSE_CONTEXT), $placeholders);
+        $execution = array(
+            'message' => $responseText,
+            'attachments' => null
+        );
         return $responseText;
     }
 

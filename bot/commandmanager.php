@@ -33,6 +33,9 @@ class CommandManager
         return $action;
     }
 
+    /**
+     * @return array|bool $execution - array with 'message' and 'attachments' keys
+     */
     public function act()
     {
         $command = $this->determineAction();
@@ -52,7 +55,7 @@ class CommandManager
                 $object = new SmilesListCommand($this->data);
                 break;
             default:
-                break;
+                return false;
         }
         return $object->execute();
     }
