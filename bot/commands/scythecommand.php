@@ -74,7 +74,7 @@ class ScytheCommand extends Command
             'message' => $responseText,
             'attachments' => null
         );
-        return $responseText;
+        return $execution;
     }
 
     /**

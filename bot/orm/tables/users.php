@@ -14,6 +14,7 @@ class Users extends Table
     const LAST_BATTLE_COMMAND = 'last_battle_command';
     const VK_USER_ID = 'vk_user_id';
     const MMR = 'mmr';
+    const IS_ADMIN = 'is_admin';
 
     protected function getMap()
     {
@@ -48,6 +49,10 @@ class Users extends Table
                 'type' => 'INTEGER',
                 'null' => false
             ),
+            self::IS_ADMIN => array(
+                'type' => 'TINYINT',
+                'default' => 0
+            )
         );
         return $map;
     }

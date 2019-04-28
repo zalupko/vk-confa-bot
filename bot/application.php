@@ -38,24 +38,17 @@ class Application
             if ($resolve) {
                 $this->sendCompiled($resolve);
             }
+            if (CommandManager::$exitSignal) {
+                throw new \Exception('Exited manually', 0);
+            }
         }
     }
 
 
-    private function sendCompiled($resolve)
+    private function sendCompiled(Message $resolve)
     {
-        $params = array(
-            'random_id' => mt_rand(),
-            'peer_id' => $resolve['peer_id']
-        );
-
-        if (!empty($resolve['message'])) {
-            $params['message'] = $resolve['message'];
-        }
-        if (!empty($resolve['attachment'])) {
-            $params['attachment'] = $resolve['attachment'];
-        }
-        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_SEND_MESSAGE, $params);
+        var_dump($resolve->getCompiled());
+        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_SEND_MESSAGE, $resolve->getCompiled());
         $client->send();
     }
 

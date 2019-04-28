@@ -1,6 +1,7 @@
 <?php
 namespace Bot;
 
+use Bot\Commands\ExitCommand;
 use Bot\Commands\SmilesListCommand;
 use Bot\Commands\TestCommand;
 use Bot\Commands\ScytheCommand;
@@ -10,8 +11,10 @@ class CommandManager
     private $actionPool = array(
         'тест' => TestCommand::class,
         'коса' => ScytheCommand::class,
-        'смайлы' => SmilesListCommand::class
+        'смайлы' => SmilesListCommand::class,
+        'перегрев' => ExitCommand::class
     );
+    public static $exitSignal;
     private $action;
     private $data;
 
@@ -19,6 +22,7 @@ class CommandManager
     {
         $this->action = $action;
         $this->data = $data;
+        self::$exitSignal = false;
     }
 
     private function determineAction()
@@ -54,8 +58,12 @@ class CommandManager
             case (SmilesListCommand::class):
                 $object = new SmilesListCommand($this->data);
                 break;
+            case (ExitCommand::class):
+                $object = new ExitCommand($this->data);
+                self::$exitSignal = ExitCommand::$exit;
+                break;
             default:
-                return false;
+                break;
         }
         return $object->execute();
     }

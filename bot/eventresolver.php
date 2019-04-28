@@ -1,6 +1,7 @@
 <?php
 namespace Bot;
 
+use Bot\Message;
 use Bot\ORM\DB;
 use Bot\Orm\Tables\Smiles;
 use Bot\ORM\Tables\Users;
@@ -30,38 +31,41 @@ class EventResolver
     {
         $command = $this->parseCommand();
         $smiles = $this->parseSmiles();
+        $execution = array();
         if (!$command) {
-            return false;
+            $message = null;
         }
-        $action = $command['action'];
-        $data = array(
-            'date' => $this->date,
-            'sender_id' => $this->sender_id,
-            'user_id' => $command['user']
-        );
-        $commandObject = new CommandManager($action, $data);
-        $execution = $commandObject->act();
-        if (empty($execution)) {
-            return false;
+        if (isset($command['action'])) {
+            $action = $command['action'];
+            $data = array(
+                'date' => $this->date,
+                'sender_id' => $this->sender_id,
+                'user_id' => $command['user']
+            );
+            $commandObject = new CommandManager($action, $data);
+            $execution = $commandObject->act();
         }
-
-        $message = $execution['message'];
-        if (!is_array($execution['attachments'])) {
+        //region Settings up the execution params
+        if (!isset($execution['message'])) {
+            $execution['message'] = null;
+        }
+        if (!isset($execution['attachments']) || !is_array($execution['attachments'])) {
             $execution['attachments'] = array();
         }
         $attachments = array_merge($execution['attachments'], $this->getSmiles($smiles));
-
-        if (!$message && !$attachments) {
-            return false;
+        //endregion
+        try {
+            $resolved = array(
+                'peer_id' => $this->peer_id,
+                'message' => $execution['message'],
+                'attachment' => $attachments
+            );
+            $message = Message::buildFromArray($resolved);
+            $this->updateTimestamp($this->sender_id, $this->date);
+            return $message;
+        } catch (\Exception $error) {
+            throw $error;
         }
-        $resolved = array(
-            'user_id' => $this->sender_id,
-            'peer_id' => $this->peer_id,
-            'message' => $message,
-            'attachment' => implode(',', $attachments)
-        );
-        $this->updateTimestamp($this->sender_id, $this->date);
-        return $resolved;
     }
 
     private function parseCommand()

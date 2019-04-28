@@ -9,7 +9,7 @@ class TestCommand extends Command
     {
         return array(
             'message' => 'хуест',
-            'attachments' => array('wall-151501081_58')
+            'attachments' => null
         );
     }
 
