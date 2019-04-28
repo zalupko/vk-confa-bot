@@ -1,18 +1,17 @@
 <?php
 namespace Bot\Commands;
 
-class TestCommand extends Command
+class StatsCommand extends Command
 {
     protected $data;
 
     public function execute()
     {
-        return 'хуест';
+        // TODO: Implement execute() method.
     }
 
     public function checkCooldown($last, $current)
     {
-        // check is not required in this case
-        return true;
+        // TODO: Implement checkCooldown() method.
     }
 }

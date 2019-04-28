@@ -10,11 +10,6 @@ class BattleCommand extends Command
     const MAX_CHANCE = 70;
     const COOLDOWN = 30;
 
-    public function __construct()
-    {
-
-    }
-
     public function execute()
     {
 
@@ -22,9 +17,7 @@ class BattleCommand extends Command
 
     public function checkCooldown($last, $current)
     {
-        if (($current - $last) < self::COOLDOWN) {
-            return false;
-        }
-        return true;
+        $time = $current - $last;
+        return self::COOLDOWN - $time;
     }
 }

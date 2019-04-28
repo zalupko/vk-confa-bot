@@ -3,7 +3,7 @@ namespace Bot;
 
 use Bot\ORM\DB;
 use Bot\Orm\Tables\Smiles;
-use Bot\ORM\Tables\User;
+use Bot\ORM\Tables\Users;
 use Bot\Tools\Debug;
 use Bot\Tools\Formater;
 
@@ -116,6 +116,6 @@ class EventResolver
     private function updateTimestamp($userId, $date)
     {
         $object = UserManager::getUserInfo($userId);
-        $object->set(User::LAST_MESSAGE_TIMESTAMP, $date)->save();
+        $object->set(Users::LAST_MESSAGE_TIMESTAMP, $date)->save();
     }
 }

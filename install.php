@@ -4,7 +4,7 @@ use Bot\ORM\Tables\Options;
 use Bot\ORM\Tables\Ratings;
 use Bot\ORM\Tables\Responses;
 use Bot\Orm\Tables\Smiles;
-use Bot\ORM\Tables\User;
+use Bot\ORM\Tables\Users;
 require_once('bot/tools/autoloader.php');
 // TODO: add Ratings info
 //region Installing Options
@@ -17,7 +17,7 @@ $optionsData = array(
 $options->add($optionsData);
 //endregion
 //region Installing Users
-$users = DB::table(User::class);
+$users = DB::table(Users::class);
 $users->create();
 //endregion
 //region Installing Smiles

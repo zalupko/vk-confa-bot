@@ -2,14 +2,18 @@
 namespace Bot;
 
 use Bot\ORM\DB;
-use Bot\Tools\Debug;
+use Bot\ORM\Entities\UserEntity;
 use Bot\Tools\VkClient;
-use Bot\ORM\Tables\User;
+use Bot\ORM\Tables\Users;
 
 class UserManager
 {
     private static $userPool;
-
+    const MENTION_TEMPLATE = '[id%s|%s]';
+    /**
+     * @param integer|string $userId
+     * @return UserEntity ORM entity by user Id
+     */
     public static function getUserInfo($userId)
     {
         if (!isset(self::$userPool[$userId])) {
@@ -24,28 +28,28 @@ class UserManager
 
     private static function saveUserInfo($userInfo)
     {
-        $users = DB::table(User::class);
+        $users = DB::table(Users::class);
         $preparedInfo = array(
-            User::VK_USER_ID => $userInfo->id,
-            User::VK_USER_NAME => $userInfo->first_name . ' ' . $userInfo->last_name,
-            User::LAST_MESSAGE_TIMESTAMP => (int)(time()),
-            User::LAST_SCYTHE_COMMAND => 1,
-            User::LAST_BATTLE_COMMAND => 1
+            Users::VK_USER_ID => $userInfo->id,
+            Users::VK_USER_NAME => $userInfo->first_name . ' ' . $userInfo->last_name,
+            Users::LAST_MESSAGE_TIMESTAMP => 1,
+            Users::LAST_SCYTHE_COMMAND => 1,
+            Users::LAST_BATTLE_COMMAND => 1
         );
         $infoObject = $users->add($preparedInfo);
-        $id = $infoObject->get(User::VK_USER_ID);
+        $id = $infoObject->get(Users::VK_USER_ID);
 
         self::$userPool[$id] = $infoObject;
     }
 
     private static function loadUserInfo($userId)
     {
-        $users = DB::table(User::class);
-        $infoObject = $users->fetchSingle(User::VK_USER_ID, $userId);
-        if ($infoObject->get(User::ID) == null) {
+        $users = DB::table(Users::class);
+        $infoObject = $users->fetchSingle(Users::VK_USER_ID, $userId);
+        if ($infoObject->get(Users::ID) == null) {
             return false;
         }
-        self::$userPool[$infoObject->get(User::VK_USER_ID)] = $infoObject;
+        self::$userPool[$infoObject->get(Users::VK_USER_ID)] = $infoObject;
         return true;
     }
 
@@ -58,5 +62,17 @@ class UserManager
         $client->send();
         $response = $client->receive();
         return $response->response[0];
+    }
+
+    /**
+     * @param UserEntity
+     * @return string
+     */
+    public static function getUserMention($entity)
+    {
+        $id = $entity->get(Users::VK_USER_ID);
+        $name = $entity->get(Users::VK_USER_NAME);
+        $response = sprintf(self::MENTION_TEMPLATE, $id, $name);
+        return $response;
     }
 }

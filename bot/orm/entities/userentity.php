@@ -1,7 +1,7 @@
 <?php
 namespace Bot\ORM\Entities;
 
-use Bot\ORM\Tables\User;
+use Bot\ORM\Tables\Users;
 
 class UserEntity extends Entity
 {
@@ -12,6 +12,6 @@ class UserEntity extends Entity
     public function __construct($data, $table)
     {
         parent::__construct($data, $table);
-        $this->id = $data[User::ID];
+        $this->id = $data[Users::ID];
     }
 }

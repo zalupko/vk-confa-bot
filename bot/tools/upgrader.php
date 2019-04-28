@@ -5,8 +5,6 @@ namespace Bot\Tools;
 use Bot\ORM\DB;
 use Bot\ORM\Tables\Options;
 use Bot\ORM\Tables\Responses;
-use Bot\ORM\Tables\Smiles;
-use Bot\ORM\Tables\Ratings;
 
 class Upgrader
 {
@@ -16,7 +14,6 @@ class Upgrader
     private static function checkVersion($dbVersion)
     {
         $version = Config::getOption('BOT_VERSION');
-        var_dump($version, $dbVersion);
         if ($dbVersion === null) {
             return true;
         }
@@ -34,6 +31,7 @@ class Upgrader
         }
         if ($version < 100) {
             // Empty upgrader body because version 1.0.0 is installed within install.php
+            Logger::log('Upgraded from '.$version.' to 100', Logger::INFO);
             self::setVersion(100);
         }
         if ($version < 101) {
@@ -43,7 +41,18 @@ class Upgrader
                 Responses::RESPONSE_CONTEXT => 'Косу можно использовать раз в 15 секунд. Подожди #cooldown# секунд'
             );
             $responses->add($data);
+            Logger::log('Upgraded from '.$version.' to 101', Logger::INFO);
             self::setVersion(101);
+        }
+        if ($version < 102) {
+            $responses = DB::table(Responses::class);
+            $data = array(
+                Responses::RESPONSE_TYPE => 'SCYTHE_UNDEFINED',
+                Responses::RESPONSE_CONTEXT => 'А куда воюем-то?'
+            );
+            $responses->add($data);
+            Logger::log('Upgraded from '.$version.' to 102', Logger::INFO);
+            self::setVersion(102);
         }
     }
 

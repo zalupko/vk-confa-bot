@@ -142,9 +142,9 @@ class Table
 
     public function delete($entity)
     {
-        $entityId = $entity->get(User::ID);
+        $entityId = $entity->get(Users::ID);
         $template = 'DELETE FROM %s WHERE %s = "%s";';
-        $query = sprintf($template, $this->table_name, User::ID, $entityId);
+        $query = sprintf($template, $this->table_name, Users::ID, $entityId);
         $result = DB::query($query);
         if ($result instanceof SqlQueryException) {
             throw $result;

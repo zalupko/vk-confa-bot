@@ -3,7 +3,7 @@ namespace Bot\ORM\Tables;
 
 use Bot\ORM\Entities\UserEntity;
 
-class User extends Table
+class Users extends Table
 {
     protected $table_name = 'vcb_users';
     protected $entity_name = UserEntity::class;

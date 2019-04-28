@@ -3,8 +3,7 @@ namespace Bot\Commands;
 
 use Bot\ORM\DB;
 use Bot\ORM\Tables\Responses;
-use Bot\ORM\Tables\User;
-use Bot\Tools\Debug;
+use Bot\ORM\Tables\Users;
 use Bot\Tools\Formater;
 use Bot\UserManager;
 
@@ -12,49 +11,66 @@ class ScytheCommand extends Command
 {
     const WIN = 'SCYTHE_WON';
     const LOSS = 'SCYTHE_LOST';
+    const UNDEFINED = 'SCYTHE_UNDEFINED';
+    const SELF = 'SCYTHE_SELF';
+    const COOLDOWN = 'SCYTHE_COOLDOWN';
     const PERCENTAGE = 50;
-    const COOLDOWN = 15;
+    const TIMER = 15;
     protected $data;
-
-    public function __construct($data)
-    {
-        $this->data = $data;
-    }
 
     public function execute()
     {
+        //region Initial data for execution
+        $battle = true;
         $responses = DB::table(Responses::class);
-        $sender = UserManager::getUserInfo($this->data['sender_id']);
-        $cooldown = $this->checkCooldown($sender->get(User::LAST_SCYTHE_COMMAND), $this->data['date']);
+        $response = false;
+        $placeholders = array();
+        $sender = $this->sender;
+        //endregion
+        //region Cooldown check
+        $cooldown = $this->checkCooldown($sender->get(Users::LAST_SCYTHE_COMMAND), $this->date);
         if ($cooldown > 0) {
-            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, 'SCYTHE_COOLDOWN');
-            $text = Formater::replacePlaceholders(
-                $response->get(Responses::RESPONSE_CONTEXT),
-                array('cooldown' => $cooldown)
+            // SCYTHE_COOLDOWN
+            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::COOLDOWN);
+            $placeholders = array(
+                'cooldown' => $cooldown
             );
-            return $text;
+            $battle = false;
         }
-        $receiver = UserManager::getUserInfo($this->data['user_id']);
-        $roll = mt_rand(1, 100);
-        if ($roll < self::PERCENTAGE) {
-            // SCYTHE_LOST
-            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::LOSS);
-        } else {
-            // SCYTHE_WON
-            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::WIN);
+        //endregion
+        //region Receiver check
+        $receiver = $this->mentioned;
+        if ($battle && !$receiver) {
+            // SCYTHE_UNDEFINED
+            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::UNDEFINED);
+            $battle = false;
         }
-        if ($sender->get(User::VK_USER_ID) == $receiver->get(User::VK_USER_ID)) {
+        if ($battle && $sender->get(Users::VK_USER_ID) == $receiver->get(Users::VK_USER_ID)) {
             // SCYTHE_SELF
-            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, 'SCYTHE_SELF');
+            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::SELF);
+            $placeholders = array('attacker' => UserManager::getUserMention($sender));
+            $battle = false;
         }
-        $responseText = $response->get(Responses::RESPONSE_CONTEXT);
-        $responseTemplate = '[id%s|%s]';
-        $placeholders = array(
-            'attacker' => sprintf($responseTemplate, $sender->get(User::VK_USER_ID), $sender->get(User::VK_USER_NAME)),
-            'defender' => sprintf($responseTemplate, $receiver->get(User::VK_USER_ID), $receiver->get(User::VK_USER_NAME)),
-        );
-        $sender->set(User::LAST_SCYTHE_COMMAND, $this->data['date'])->save();
-        return Formater::replacePlaceholders($responseText, $placeholders);
+        //endregion
+        //region Scythe logic
+        if ($battle) {
+            $roll = mt_rand(1, 100);
+            if ($roll < self::PERCENTAGE) {
+                // SCYTHE_LOST
+                $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::LOSS);
+            } else {
+                // SCYTHE_WON
+                $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::WIN);
+            }
+            $placeholders = array(
+                'attacker' => UserManager::getUserMention($sender),
+                'defender' => UserManager::getUserMention($receiver)
+            );
+            $sender->set(Users::LAST_SCYTHE_COMMAND, $this->date)->save();
+        }
+        //endregion
+        $responseText = Formater::replacePlaceholders($response->get(Responses::RESPONSE_CONTEXT), $placeholders);
+        return $responseText;
     }
 
     /**
@@ -65,6 +81,6 @@ class ScytheCommand extends Command
     public function checkCooldown($last, $current)
     {
         $time = $current-$last;
-        return self::COOLDOWN - $time;
+        return self::TIMER - $time;
     }
 }

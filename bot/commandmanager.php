@@ -1,14 +1,17 @@
 <?php
 namespace Bot;
 
+use Bot\Commands\SmilesListCommand;
 use Bot\Commands\TestCommand;
 use Bot\Commands\ScytheCommand;
+use Bot\Tools\Logger;
 
 class CommandManager
 {
     private $actionPool = array(
         'тест' => TestCommand::class,
-        'коса' => ScytheCommand::class
+        'коса' => ScytheCommand::class,
+        'смайлы' => SmilesListCommand::class
     );
     private $action;
     private $data;
@@ -38,12 +41,17 @@ class CommandManager
             return false;
         }
         $object = null;
+        Logger::log('Received "'.$command.'" from EventResolver', Logger::DEBUG);
+
         switch ($command) {
             case (TestCommand::class):
                 $object = new TestCommand($this->data);
                 break;
             case (ScytheCommand::class):
                 $object = new ScytheCommand($this->data);
+                break;
+            case (SmilesListCommand::class):
+                $object = new SmilesListCommand($this->data);
                 break;
             default:
                 break;
