@@ -11,5 +11,5 @@ try {
 	$application->checkInterface();
     $application->run();
 } catch (Exception $Error) {
-    Logger::log($Error->getMessage());
+    Logger::log($Error->getMessage(), Logger::ERROR);
 }
