@@ -77,11 +77,6 @@ class ScytheCommand extends Command
         return $execution;
     }
 
-    /**
-     * @param int $last
-     * @param int $current current message timestamp
-     * @return bool true - can send; false - cannot;
-     */
     public function checkCooldown($last, $current)
     {
         $time = $current-$last;
