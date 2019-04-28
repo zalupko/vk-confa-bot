@@ -4,7 +4,7 @@ namespace Bot;
 class Message
 {
     private $message;
-    private $attachments;
+    private $attachment;
     private $peer_id;
     private $random_id;
     const EMPTY_CONTEXT = '';
@@ -13,18 +13,18 @@ class Message
      * Message constructor.
      * @param $peer_id
      * @param string|null $message
-     * @param array|null $attachments
+     * @param array|null $attachment
      * @throws \Exception
      */
-    public function __construct($peer_id, $message = null, $attachments = null)
+    public function __construct($peer_id, $message = null, $attachment = null)
     {
-        if ($message === null && $attachments === null) {
+        if ($message === null && $attachment === null) {
             throw new \Exception('At least 1 argument must be not null');
         }
         $this->random_id = mt_rand();
         $this->peer_id = $peer_id;
         $this->message = $message;
-        $this->attachments = $attachments;
+        $this->attachment = $attachment;
     }
 
     /**
@@ -36,7 +36,7 @@ class Message
     {
         $peer_id = isset($data['peer_id']) ? $data['peer_id'] : null;
         $message = isset($data['message']) ? $data['message'] : null;
-        $attachments = isset($data['attachments']) ? $data['attachments'] : null;
+        $attachments = isset($data['attachment']) ? $data['attachment'] : null;
         return new self($peer_id, $message, $attachments);
     }
 
@@ -46,7 +46,7 @@ class Message
             'random_id' => $this->random_id,
             'peer_id' => $this->peer_id,
             'message' => $this->getMessage(),
-            'attachments' => $this->getAttachments()
+            'attachment' => $this->getAttachments()
         );
         return $data;
     }
@@ -61,9 +61,9 @@ class Message
 
     public function getAttachments()
     {
-        if ($this->attachments === null) {
+        if ($this->attachment === null) {
             return self::EMPTY_CONTEXT;
         }
-        return implode(',', $this->attachments);
+        return implode(',', $this->attachment);
     }
 }

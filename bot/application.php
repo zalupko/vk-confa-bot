@@ -35,11 +35,8 @@ class Application
             }
             $resolver = new EventResolver($event);
             $resolve = $resolver->resolve();
-            if ($resolve) {
+            if ($resolve instanceof Message) {
                 $this->sendCompiled($resolve);
-            }
-            if (CommandManager::$exitSignal) {
-                throw new \Exception('Exited manually', 0);
             }
         }
     }
@@ -47,7 +44,6 @@ class Application
 
     private function sendCompiled(Message $resolve)
     {
-        var_dump($resolve->getCompiled());
         $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_SEND_MESSAGE, $resolve->getCompiled());
         $client->send();
     }

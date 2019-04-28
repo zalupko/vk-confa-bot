@@ -1,7 +1,6 @@
 <?php
 namespace Bot;
 
-use Bot\Message;
 use Bot\ORM\DB;
 use Bot\Orm\Tables\Smiles;
 use Bot\ORM\Tables\Users;
@@ -31,7 +30,10 @@ class EventResolver
     {
         $command = $this->parseCommand();
         $smiles = $this->parseSmiles();
-        $execution = array();
+        $execution = array(
+            'message' => null,
+            'attachments' => null
+        );
         if (!$command) {
             $message = null;
         }
@@ -49,10 +51,13 @@ class EventResolver
         if (!isset($execution['message'])) {
             $execution['message'] = null;
         }
-        if (!isset($execution['attachments']) || !is_array($execution['attachments'])) {
+        if (!isset($execution['attachments'])) {
             $execution['attachments'] = array();
         }
         $attachments = array_merge($execution['attachments'], $this->getSmiles($smiles));
+        if (empty($execution['message']) && empty($attachments)) {
+            return false;
+        }
         //endregion
         try {
             $resolved = array(

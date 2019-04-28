@@ -1,7 +1,6 @@
 <?php
 namespace Bot;
 
-use Bot\Commands\ExitCommand;
 use Bot\Commands\SmilesListCommand;
 use Bot\Commands\TestCommand;
 use Bot\Commands\ScytheCommand;
@@ -20,7 +19,6 @@ class CommandManager
     {
         $this->action = $action;
         $this->data = $data;
-        self::$exitSignal = false;
     }
 
     private function determineAction()
