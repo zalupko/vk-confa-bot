@@ -1,9 +1,10 @@
 <?php
 namespace Bot;
 
+use Bot\Tools\Config;
 use Bot\ORM\DB;
 use Bot\ORM\Entities\UserEntity;
-use Bot\Tools\VkClient;
+use Bot\Internal\VkClient;
 use Bot\ORM\Tables\Users;
 
 class UserManager
@@ -58,7 +59,7 @@ class UserManager
         $params = array(
             'user_id' => $userId
         );
-        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_GET_USER, $params);
+        $client = new VkClient(Config::getOption('VK_API_URL'), VkClient::VK_GET_USER, $params);
         $client->send();
         $response = $client->receive();
         return $response->response[0];

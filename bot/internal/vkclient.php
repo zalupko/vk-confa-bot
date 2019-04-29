@@ -1,18 +1,18 @@
 <?php
+/**
+ * Internal class for sending and receiving info via VK API
+ * @package VkConfaBot
+ */
 namespace Bot\Internal;
 
+use Bot\Tools\Config;
 use Bot\Internal\Errors\VkClientException;
 
 class VkClient
 {
-    //region Data that is required to use VK API methods
-    const VK_API_VERSION = '5.90';
-    const VK_API_URL = 'https://api.vk.com/method/';
-    const VK_ACCESS_TOKEN = 'd378d1136fb1ec1e8ec80b516656adbf536a3512e74a22d9c106f42389cdb8b654ab109fa286a8393f5c4';
     const REQUEST_SEPARATOR = '?';
-    //endregion
 
-    //region VK API methods
+    //region Supported VK API methods
     const VK_SEND_MESSAGE = 'messages.send';
     const VK_GET_USER = 'users.get';
     const VK_GET_LP = 'groups.getLongPollServer';
@@ -48,8 +48,8 @@ class VkClient
         $authParams = array();
         if ($this->auth) {
             $authParams = array(
-                'access_token' => self::VK_ACCESS_TOKEN,
-                'v' => self::VK_API_VERSION
+                'access_token' => Config::getOption('VK_ACCESS_TOKEN'),
+                'v' => Config::getOption('VK_API_VERSION')
             );
         }
         $params = array_merge($this->params, $authParams);

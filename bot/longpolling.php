@@ -1,6 +1,7 @@
 <?php
 namespace Bot;
 
+use Bot\Tools\Config;
 use Bot\Internal\VkClient;
 
 class LongPolling
@@ -9,14 +10,13 @@ class LongPolling
     private $server;
     private $ts;
     const ACTION = 'a_check';
-    const VK_GROUP_ID = 180945331; //TODO: define in config.ini
 
     public function getLongPollingServer()
     {
         $params = array(
-            'group_id' => self::VK_GROUP_ID
+            'group_id' => Config::getOption('VK_GROUP_ID')
         );
-        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_GET_LP, $params);
+        $client = new VkClient(Config::getOption('VK_API_URL'), VkClient::VK_GET_LP, $params);
         $client->send();
         $response = $client->receive();
         $this->server = $response->response;
@@ -36,7 +36,7 @@ class LongPolling
         $event = $client->receive();
         if (isset($event->failed)) {
             $this->error = $event->failed;
-			return null;
+            return null;
         }
         $this->ts = $event->ts;
         $update = $event->updates;

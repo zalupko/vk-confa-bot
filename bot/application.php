@@ -2,7 +2,8 @@
 namespace Bot;
 
 use Bot\ORM\DB;
-use Bot\Tools\VkClient;
+use Bot\Tools\Config;
+use Bot\Internal\VkClient;
 
 /**
  * Class Application
@@ -38,23 +39,29 @@ class Application
             if ($resolve instanceof Message) {
                 $this->sendCompiled($resolve);
             }
+            $this->postResolveActions();
         }
     }
 
 
     private function sendCompiled(Message $resolve)
     {
-        $client = new VkClient(VkClient::VK_API_URL, VkClient::VK_SEND_MESSAGE, $resolve->getCompiled());
+        $client = new VkClient(Config::getOption('VK_API_URL'), VkClient::VK_SEND_MESSAGE, $resolve->getCompiled());
         $client->send();
     }
 
     public function checkInterface()
     {
-            if (php_sapi_name() != self::INTERFACE_NAME) {
-                    throw new \Exception(self::INTERFACE_ERROR);
-            }
+        if (php_sapi_name() != self::INTERFACE_NAME) {
+            throw new \RuntimeException(self::INTERFACE_ERROR);
+        }
     }
 
+    private function postResolveActions()
+    {
+        
+    }
+    
     public function __destruct()
     {
         DB::disconnect();
