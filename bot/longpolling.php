@@ -1,7 +1,7 @@
 <?php
 namespace Bot;
 
-use Bot\Tools\VkClient;
+use Bot\Internal\VkClient;
 
 class LongPolling
 {
@@ -9,7 +9,7 @@ class LongPolling
     private $server;
     private $ts;
     const ACTION = 'a_check';
-    const VK_GROUP_ID = 180945331;
+    const VK_GROUP_ID = 180945331; //TODO: define in config.ini
 
     public function getLongPollingServer()
     {

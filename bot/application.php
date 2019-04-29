@@ -11,8 +11,8 @@ use Bot\Tools\VkClient;
  */
 class Application
 {
-	const INTERFACE_NAME = 'cli';
-	const INTERFACE_ERROR = 'Script cannot be executed not from CLI';
+    const INTERFACE_NAME = 'cli';
+    const INTERFACE_ERROR = 'Script cannot be executed not from CLI';
 
     public function __construct()
     {
@@ -48,14 +48,14 @@ class Application
         $client->send();
     }
 
-	public function checkInterface()
-	{
-		if (php_sapi_name() != self::INTERFACE_NAME) {
-			throw new \Exception(self::INTERFACE_ERROR);
-		}
-	}
+    public function checkInterface()
+    {
+            if (php_sapi_name() != self::INTERFACE_NAME) {
+                    throw new \Exception(self::INTERFACE_ERROR);
+            }
+    }
 
-	public function __destruct()
+    public function __destruct()
     {
         DB::disconnect();
     }
