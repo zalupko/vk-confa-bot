@@ -5,6 +5,7 @@ namespace Bot\Tools;
 use Bot\ORM\DB;
 use Bot\ORM\Tables\Options;
 use Bot\ORM\Tables\Responses;
+use Bot\ORM\Tables\Ratings;
 
 class Upgrader
 {
@@ -71,6 +72,47 @@ class Upgrader
             }
             Logger::log('Upgraded from '.$version.' to 103', Logger::INFO);
             self::setVersion(103);
+        }
+        
+        if ($version < 104) {
+            $responses = DB::table(Responses::class);
+            $data = array(
+                array(
+                    Responses::RESPONSE_TYPE => 'RATING_LOST',
+                    Responses::RESPONSE_CONTEXT => 'БЛЯЯЯ ЛУЗСТРИК! #user# проебавси и теперь он - #new_rank#.'
+                ),
+                array(
+                    Responses::RESPONSE_TYPE => 'RATING_GAINED',
+                    Responses::RESPONSE_CONTEXT => 'На плюсмораличах #user# вывозит заветный ранг - #new_rank#.'
+                )
+            );
+            foreach ($data as $item) {
+                $responses->add($item);
+            }
+            Logger::log('Upgraded from '.$version.' to 104', Logger::INFO);
+            self::setVersion(104);
+        }
+        
+        if ($version < 105) {
+            $ratings = DB::table(Ratings::class);
+            $data = array(
+                '1' => 'freezemage',
+                '2000' => '2к-бог',
+                '3000' => 'вы - 2к помойки',
+                '4000' => 'дендибог', 
+                '5000' => 'украинская продота' ,
+                '6000' => 'чемпион мира по WoT' ,
+                '7000' => 'ребята, а это годень?', 
+                '8000' => 'ascended', 
+                '9000' => 'миракл'
+            );
+            
+            $dataTemplate = array(Ratings::POINTS_REQUIRED, Ratings::RATING_NAME);
+            foreach ($data as $req => $name) {
+                $item = array_combine($dataTemplate, array($req, $name));
+                $ratings->add($item);
+            }
+            self::setVersion(105);
         }
     }
 

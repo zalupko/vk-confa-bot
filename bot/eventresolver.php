@@ -29,6 +29,16 @@ class EventResolver
         $this->date = $event->object->date;
     }
 
+    public function getSenderId()
+    {
+        return $this->sender_id;
+    }
+    
+    public function getPeerId()
+    {
+        return $this->peer_id;
+    }
+    
     public function resolve()
     {
         $command = $this->parseCommand();

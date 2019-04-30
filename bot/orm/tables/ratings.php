@@ -1,13 +1,15 @@
 <?php
 namespace Bot\ORM\Tables;
 
+use Bot\ORM\Entities\RatingEntity;
+
 class Ratings extends Table
 {
     const ID = 'id';
     const RATING_NAME = 'rating_name';
     const POINTS_REQUIRED = 'points_required';
     protected $table_name = 'vcb_ratings';
-    protected $entity_name = '';
+    protected $entity_name = RatingEntity::class;
 
     protected function getMap()
     {

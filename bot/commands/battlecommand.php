@@ -3,6 +3,7 @@ namespace Bot\Commands;
 
 use Bot\Internal\Managers\UserManager;
 use Bot\Internal\Managers\ResponseManager;
+use Bot\Internal\Managers\RatingManager;
 use Bot\ORM\Tables\Users;
 use Bot\Tools\Formater;
 
@@ -13,7 +14,7 @@ class BattleCommand extends Command
     const MIN_CHANCE = 20;
     const BASE_CHANCE = 50;
     const MAX_CHANCE = 70;
-    const TIMER = 30;
+    const TIMER = 0;
 
     const UNDEFINED = 'BATTLE_UNDEFINED';
     const WRONG = 'BATTLE_SELF';
@@ -52,6 +53,14 @@ class BattleCommand extends Command
         if ($battle) {
             $attackerMmr = $this->sender->get(Users::MMR);
             $defenderMmr = $this->mentioned->get(Users::MMR);
+            RatingManager::registerRating(
+                    $this->sender->get(Users::VK_USER_ID), 
+                    $attackerMmr
+            );
+            RatingManager::registerRating(
+                    $this->mentioned->get(Users::VK_USER_ID), 
+                    $defenderMmr
+            );
             $placeholders = array(
                 'attacker' => UserManager::getUserMention($this->sender),
                 'defender' => UserManager::getUserMention($this->mentioned)
@@ -83,6 +92,14 @@ class BattleCommand extends Command
                     ->set(Users::MMR, $attackerMmr)
                     ->save();
             $this->mentioned->set(Users::MMR, $defenderMmr)->save();
+            RatingManager::updateRating(
+                    $this->sender->get(Users::VK_USER_ID), 
+                    $attackerMmr
+            );
+            RatingManager::updateRating(
+                    $this->mentioned->get(Users::VK_USER_ID), 
+                    $defenderMmr
+            );
         }
         if ($response === null) {
             $response = 'Wtf?!';

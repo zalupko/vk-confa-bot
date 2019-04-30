@@ -14,7 +14,7 @@ class Users extends Table
     const LAST_BATTLE_COMMAND = 'last_battle_command';
     const VK_USER_ID = 'vk_user_id';
     const MMR = 'mmr';
-
+    
     protected function getMap()
     {
 
@@ -47,7 +47,7 @@ class Users extends Table
             self::LAST_SCYTHE_COMMAND => array(
                 'type' => 'INTEGER',
                 'default' => 1
-            ),
+            )
         );
         return $map;
     }
