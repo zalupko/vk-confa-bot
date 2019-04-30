@@ -54,6 +54,24 @@ class Upgrader
             Logger::log('Upgraded from '.$version.' to 102', Logger::INFO);
             self::setVersion(102);
         }
+        if ($version < 103) {
+            $responses = DB::table(Responses::class);
+            $data = array(
+                array(
+                    Responses::RESPONSE_TYPE => 'BATTLE_UNDEFINED',
+                    Responses::RESPONSE_CONTEXT => 'А кого звать-то?'
+                ),
+                array(
+                    Responses::RESPONSE_TYPE => 'BATTLE_COOLDOWN',
+                    Responses::RESPONSE_CONTEXT => 'Эй, ебалай, жди #cooldown# секунд. А то че?'
+                )
+            );
+            foreach ($data as $item) {
+                $responses->add($item);
+            }
+            Logger::log('Upgraded from '.$version.' to 103', Logger::INFO);
+            self::setVersion(103);
+        }
     }
 
     private static function setVersion($version)

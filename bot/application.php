@@ -59,7 +59,8 @@ class Application
 
     private function postResolveActions()
     {
-        
+        //TODO: implement AFK checks for peers
+        //TODO: implement post message rank check
     }
     
     public function __destruct()

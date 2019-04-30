@@ -1,6 +1,9 @@
 <?php
 namespace Bot;
 
+use Bot\Commands\Command;
+use Bot\Internal\Managers\CommandManager;
+use Bot\Internal\Managers\UserManager;
 use Bot\ORM\DB;
 use Bot\Orm\Tables\Smiles;
 use Bot\ORM\Tables\Users;
@@ -44,8 +47,10 @@ class EventResolver
                 'sender_id' => $this->sender_id,
                 'user_id' => $command['user']
             );
-            $commandObject = new CommandManager($action, $data);
-            $execution = $commandObject->act();
+            $commandObject = CommandManager::getCommandObject($action, $data);
+            if ($commandObject instanceof Command) {
+                $execution = $commandObject->execute();
+            }
         }
         //region Settings up the execution params
         if (!isset($execution['message'])) {
@@ -97,9 +102,9 @@ class EventResolver
         if (empty($user)) {
             return false;
         }
-		list($fullInfo, $userId, $userName) = $user;
+        list($fullInfo, $userId, $userName) = $user;
         $userId = substr($userId, 2);
-		unset($userName, $fullInfo);
+        unset($userName, $fullInfo);
 
         return $userId;
     }

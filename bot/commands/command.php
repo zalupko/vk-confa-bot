@@ -1,7 +1,7 @@
 <?php
 namespace Bot\Commands;
 
-use Bot\UserManager;
+use Bot\Internal\Managers\UserManager;
 
 abstract class Command
 {

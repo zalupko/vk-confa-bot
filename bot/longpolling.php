@@ -56,7 +56,7 @@ class LongPolling
 
     public function checkKey()
     {
-        if ($this->error == 3){
+        if ($this->error == 2){
             return false;
         }
         return true;

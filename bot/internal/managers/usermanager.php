@@ -1,11 +1,11 @@
 <?php
-namespace Bot;
+namespace Bot\Internal\Managers;
 
 use Bot\Tools\Config;
 use Bot\ORM\DB;
 use Bot\ORM\Entities\UserEntity;
-use Bot\Internal\VkClient;
 use Bot\ORM\Tables\Users;
+use Bot\Internal\VkClient;
 
 class UserManager
 {

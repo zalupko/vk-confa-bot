@@ -5,14 +5,14 @@ use Bot\ORM\DB;
 use Bot\ORM\Tables\Responses;
 use Bot\ORM\Tables\Users;
 use Bot\Tools\Formater;
-use Bot\UserManager;
+use Bot\Internal\Managers\UserManager;
 
 class ScytheCommand extends Command
 {
     const WIN = 'SCYTHE_WON';
     const LOSS = 'SCYTHE_LOST';
     const UNDEFINED = 'SCYTHE_UNDEFINED';
-    const SELF = 'SCYTHE_SELF';
+    const WRONG = 'SCYTHE_SELF';
     const COOLDOWN = 'SCYTHE_COOLDOWN';
     const PERCENTAGE = 50;
     const TIMER = 15;
@@ -47,7 +47,7 @@ class ScytheCommand extends Command
         }
         if ($battle && $sender->get(Users::VK_USER_ID) == $receiver->get(Users::VK_USER_ID)) {
             // SCYTHE_SELF
-            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::SELF);
+            $response = $responses->fetchSingle(Responses::RESPONSE_TYPE, self::WRONG);
             $placeholders = array('attacker' => UserManager::getUserMention($sender));
             $battle = false;
         }
