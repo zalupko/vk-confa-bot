@@ -48,6 +48,9 @@ class BattleCommand extends Command
         if ($battle && ($this->mentioned->get(Users::ID) == $this->sender->get(Users::ID))) {
             // BATTLE_SELF
             $response = ResponseManager::getRandomResponse(self::WRONG);
+            $placeholders = array(
+                'attacker' => UserManager::getUserMention($this->sender)
+            );
             $battle = false;
         }
         if ($battle) {
