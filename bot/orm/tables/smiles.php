@@ -1,5 +1,5 @@
 <?php
-namespace Bot\Orm\Tables;
+namespace Bot\ORM\Tables;
 
 use Bot\ORM\Entities\SmileEntity;
 

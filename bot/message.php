@@ -66,4 +66,9 @@ class Message
         }
         return implode(',', $this->attachment);
     }
+    
+    public function getPeerId()
+    {
+        return $this->peer_id;
+    }
 }

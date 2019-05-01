@@ -4,10 +4,13 @@ namespace Bot;
 use Bot\ORM\DB;
 use Bot\Tools\Config;
 use Bot\Tools\Formater;
+use Bot\ORM\Tables\Peers;
 use Bot\Internal\VkClient;
 use Bot\Internal\Managers\RatingManager;
 use Bot\Internal\Managers\ResponseManager;
 use Bot\Internal\Managers\UserManager;
+use Bot\Internal\Managers\PeerManager;
+
 
 /**
  * Class Application
@@ -18,7 +21,8 @@ class Application
 {
     const INTERFACE_NAME = 'cli';
     const INTERFACE_ERROR = 'Script cannot be executed not from CLI';
-
+    const AFK_COOLDOWN = 3600;
+    
     public function __construct()
     {
         DB::getConnection();
@@ -29,6 +33,7 @@ class Application
         $longPoll = new LongPolling();
         $longPoll->getLongPollingServer();
         while (!$longPoll->checkError()) {
+            $this->preResolveActions();
             $event = $longPoll->getEvent();
             // Ключ устарел - повторная генерация.
             if (!$longPoll->checkKey()) {
@@ -52,6 +57,10 @@ class Application
     {
         $client = new VkClient(Config::getOption('VK_API_URL'), VkClient::VK_SEND_MESSAGE, $message->getCompiled());
         $client->send();
+        $timestamp = time();
+        $table = DB::table(Peers::class);
+        $peer = $table->fetchSingle(Peers::PEER_ID, $message->getPeerId());
+        $peer->set(Peers::PEER_LAST_MESSAGE, $timestamp)->save();
     }
 
     public function checkInterface()
@@ -61,9 +70,30 @@ class Application
         }
     }
 
+    private function preResolveActions()
+    {
+        $table = DB::table(Peers::class);
+        $current = time();
+        $peers = $table->fetchMany(1, 1);
+        $afkPeers = array();
+        foreach ($peers as $peer) {
+            $peerLastMessage = $peer->get(Peers::PEER_LAST_MESSAGE);
+            if (($current - $peerLastMessage) > self::AFK_COOLDOWN) {
+                $afkPeers[] = $peer->get(Peers::PEER_ID);
+            }
+        }
+        foreach ($afkPeers as $afkPeer) {
+            $response = ResponseManager::getRandomResponse('AFK');
+            $message = Message::buildFromArray(array(
+                'message' => $response,
+                'peer_id' => $afkPeer
+            ));
+            $this->sendCompiled($message);
+        }
+    }
+    
     private function postResolveActions($peerId, $senderId)
     {
-        //TODO: implement AFK checks for peers
         //TODO: implement post message rank check
         $check = RatingManager::checkRatingChanges($senderId);
         if ($check !== false) {

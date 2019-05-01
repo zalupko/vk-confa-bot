@@ -3,8 +3,9 @@ use Bot\ORM\DB;
 use Bot\ORM\Tables\Options;
 use Bot\ORM\Tables\Ratings;
 use Bot\ORM\Tables\Responses;
-use Bot\Orm\Tables\Smiles;
+use Bot\ORM\Tables\Smiles;
 use Bot\ORM\Tables\Users;
+use Bot\ORM\Tables\Peers;
 require_once('bot/tools/autoloader.php');
 // TODO: add Ratings info
 //region Installing Options
@@ -431,4 +432,8 @@ $ratings = DB::table(Ratings::class);
 $ratings->create();
 //endregion
 
+//region Installing Peers
+$peers = DB::table(Peers::class);
+$peers->create();
+//endregion
 

@@ -33,7 +33,6 @@ class UserManager
         $preparedInfo = array(
             Users::VK_USER_ID => $userInfo->id,
             Users::VK_USER_NAME => $userInfo->first_name . ' ' . $userInfo->last_name,
-            Users::LAST_MESSAGE_TIMESTAMP => 1,
             Users::LAST_SCYTHE_COMMAND => 1,
             Users::LAST_BATTLE_COMMAND => 1
         );
@@ -47,7 +46,7 @@ class UserManager
     {
         $users = DB::table(Users::class);
         $infoObject = $users->fetchSingle(Users::VK_USER_ID, $userId);
-        if ($infoObject->get(Users::ID) == null) {
+        if ($infoObject === false) {
             return false;
         }
         self::$userPool[$infoObject->get(Users::VK_USER_ID)] = $infoObject;

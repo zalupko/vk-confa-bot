@@ -15,6 +15,13 @@ class RatingManager
     private static $ratings;
     private static $checkRequired = false;
 
+    public static function getUserRating($mmr)
+    {
+        $ratings = self::getRatings();
+        $roundMmr = ((int)($mmr / 1000) * 1000);
+        return $ratings[$roundMmr];
+    }
+    
     private static function getRatings()
     {
         if (empty(self::$ratings)) {

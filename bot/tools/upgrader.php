@@ -97,6 +97,7 @@ class Upgrader
             $ratings = DB::table(Ratings::class);
             $data = array(
                 '1' => 'freezemage',
+                '1000' => 'Да разве может быть хуже?',
                 '2000' => '2к-бог',
                 '3000' => 'вы - 2к помойки',
                 '4000' => 'дендибог', 

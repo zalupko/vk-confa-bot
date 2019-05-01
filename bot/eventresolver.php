@@ -5,8 +5,10 @@ use Bot\Commands\Command;
 use Bot\Internal\Managers\CommandManager;
 use Bot\Internal\Managers\UserManager;
 use Bot\ORM\DB;
-use Bot\Orm\Tables\Smiles;
+use Bot\ORM\Tables\Smiles;
 use Bot\ORM\Tables\Users;
+use Bot\ORM\Tables\Peers;
+use Bot\ORM\Entities\PeerEntity;
 use Bot\Tools\Formater;
 
 class EventResolver
@@ -43,6 +45,7 @@ class EventResolver
     {
         $command = $this->parseCommand();
         $smiles = $this->parseSmiles();
+        $this->updateTimestamp($this->peer_id, $this->date);
         $execution = array(
             'message' => null,
             'attachments' => null
@@ -81,7 +84,6 @@ class EventResolver
                 'attachment' => $attachments
             );
             $message = Message::buildFromArray($resolved);
-            $this->updateTimestamp($this->sender_id, $this->date);
             return $message;
         } catch (\Exception $error) {
             throw $error;
@@ -140,9 +142,18 @@ class EventResolver
         return $attachments;
     }
 
-    private function updateTimestamp($userId, $date)
+    private function updateTimestamp($peerId, $date)
     {
-        $object = UserManager::getUserInfo($userId);
-        $object->set(Users::LAST_MESSAGE_TIMESTAMP, $date)->save();
+        $table = DB::table(Peers::class);
+        $peer = $table->fetchSingle(Peers::PEER_ID, $peerId);
+        if ($peer === false) {
+            $data = array(
+                Peers::PEER_ID => $peerId,
+                Peers::PEER_LAST_MESSAGE => $date
+            );
+            $table->add($data);
+            $peer = $table->fetchSingle(Peers::PEER_ID, $peerId);
+        }
+        $peer->set(Peers::PEER_LAST_MESSAGE, $date)->save();
     }
 }

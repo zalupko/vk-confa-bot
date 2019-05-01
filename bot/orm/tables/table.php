@@ -20,6 +20,9 @@ class Table
             throw $fetch;
         }
         $data = $fetch->fetch_assoc();
+        if ($data === null) {
+            return false;
+        }
         $object = new $this->entity_name($data, $this);
         return $object;
     }

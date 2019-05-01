@@ -14,7 +14,7 @@ class BattleCommand extends Command
     const MIN_CHANCE = 20;
     const BASE_CHANCE = 50;
     const MAX_CHANCE = 70;
-    const TIMER = 0;
+    const TIMER = 30;
 
     const UNDEFINED = 'BATTLE_UNDEFINED';
     const WRONG = 'BATTLE_SELF';
@@ -39,13 +39,13 @@ class BattleCommand extends Command
             $battle = false;
         }
         
-        if ($battle && $this->mentioned == false) {
+        if ($battle && ($this->mentioned == false)) {
             // BATTLE_UNDEFINED
             $response = ResponseManager::getRandomResponse(self::UNDEFINED);
             $battle = false;
         }
         
-        if ($battle && $this->mentioned->get(Users::ID) == $this->sender->get(Users::ID)) {
+        if ($battle && ($this->mentioned->get(Users::ID) == $this->sender->get(Users::ID))) {
             // BATTLE_SELF
             $response = ResponseManager::getRandomResponse(self::WRONG);
             $battle = false;
@@ -103,12 +103,15 @@ class BattleCommand extends Command
                     $this->mentioned->get(Users::VK_USER_ID), 
                     $defenderMmr
             );
+            if ($change > 0) {
+                $change = '+'.$change;
+            }
+            $response .= "\nРейтинг: ".$change;
         }
         if ($response === null) {
             $response = 'Wtf?!';
         }
         $responseText = Formater::replacePlaceholders($response, $placeholders);
-        $responseText .= "\nРейтинг: ".$change;
         $execution = array(
             'message' => $responseText,
             'attachments' => null
