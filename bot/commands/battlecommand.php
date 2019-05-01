@@ -81,17 +81,20 @@ class BattleCommand extends Command
                 // TODO: rework this
                 $attackerMmr -= self::PTS_DIFF;
                 $defenderMmr += self::PTS_DIFF;
+                $change = -1 * self::PTS_DIFF;
             } else {
                 // BATTLE_WON
                 $response = ResponseManager::getRandomResponse(self::WIN);
                 $attackerMmr += self::PTS_DIFF;
                 $defenderMmr -= self::PTS_DIFF;
+                $change = self::PTS_DIFF;
             }
             $this->sender
                     ->set(Users::LAST_BATTLE_COMMAND, $this->date)
                     ->set(Users::MMR, $attackerMmr)
                     ->save();
             $this->mentioned->set(Users::MMR, $defenderMmr)->save();
+
             RatingManager::updateRating(
                     $this->sender->get(Users::VK_USER_ID), 
                     $attackerMmr
@@ -105,6 +108,7 @@ class BattleCommand extends Command
             $response = 'Wtf?!';
         }
         $responseText = Formater::replacePlaceholders($response, $placeholders);
+        $responseText .= "\nРейтинг: ".$change;
         $execution = array(
             'message' => $responseText,
             'attachments' => null

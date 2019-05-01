@@ -68,9 +68,9 @@ class Application
         $check = RatingManager::checkRatingChanges($senderId);
         if ($check !== false) {
             if ($check['direction'] == RatingManager::LOST_RANK) {
-                $responseType = 'RATING_GAINED';
-            } else {
                 $responseType = 'RATING_LOST';
+            } else {
+                $responseType = 'RATING_GAINED';
             }
             $response = ResponseManager::getRandomResponse($responseType);
             $senderObject = UserManager::getUserInfo($senderId);

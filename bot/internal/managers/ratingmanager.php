@@ -53,7 +53,7 @@ class RatingManager
         var_dump($newRank);
         $data = array(
             'new_rank' => $newRank,
-            'direction' => $change * -1
+            'direction' => $change
         );
         return $data;
     }
