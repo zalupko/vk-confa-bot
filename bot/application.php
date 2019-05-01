@@ -30,9 +30,11 @@ class Application
 
     public function run()
     {
+        echo memory_get_usage().PHP_EOL;
         $longPoll = new LongPolling();
         $longPoll->getLongPollingServer();
         while (!$longPoll->checkError()) {
+            echo 'Before iteration: '.memory_get_usage().PHP_EOL;
             $this->preResolveActions();
             $event = $longPoll->getEvent();
             // Ключ устарел - повторная генерация.
@@ -49,6 +51,7 @@ class Application
                 $this->sendCompiled($resolve);
             }
             $this->postResolveActions($resolver->getPeerId(), $resolver->getSenderId());
+            echo 'After iteration: '.memory_get_usage().PHP_EOL;
         }
     }
 
@@ -94,7 +97,6 @@ class Application
     
     private function postResolveActions($peerId, $senderId)
     {
-        //TODO: implement post message rank check
         $check = RatingManager::checkRatingChanges($senderId);
         if ($check !== false) {
             if ($check['direction'] == RatingManager::LOST_RANK) {
