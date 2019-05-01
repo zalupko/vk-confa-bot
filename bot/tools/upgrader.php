@@ -32,6 +32,7 @@ class Upgrader
         }
         if ($version < 100) {
             // Empty upgrader body because version 1.0.0 is installed within install.php
+            $version = 100;
             Logger::log('Upgraded from '.$version.' to 100', Logger::INFO);
             self::setVersion(100);
         }
@@ -42,6 +43,7 @@ class Upgrader
                 Responses::RESPONSE_CONTEXT => 'Косу можно использовать раз в 15 секунд. Подожди #cooldown# секунд'
             );
             $responses->add($data);
+            $version = 101;
             Logger::log('Upgraded from '.$version.' to 101', Logger::INFO);
             self::setVersion(101);
         }
@@ -53,6 +55,7 @@ class Upgrader
             );
             $responses->add($data);
             Logger::log('Upgraded from '.$version.' to 102', Logger::INFO);
+            $version = 102;
             self::setVersion(102);
         }
         if ($version < 103) {
@@ -70,6 +73,7 @@ class Upgrader
             foreach ($data as $item) {
                 $responses->add($item);
             }
+            $version = 103;
             Logger::log('Upgraded from '.$version.' to 103', Logger::INFO);
             self::setVersion(103);
         }
@@ -89,6 +93,7 @@ class Upgrader
             foreach ($data as $item) {
                 $responses->add($item);
             }
+            $version = 104;
             Logger::log('Upgraded from '.$version.' to 104', Logger::INFO);
             self::setVersion(104);
         }
@@ -113,6 +118,7 @@ class Upgrader
                 $item = array_combine($dataTemplate, array($req, $name));
                 $ratings->add($item);
             }
+            $version = 105;
             self::setVersion(105);
         }
     }

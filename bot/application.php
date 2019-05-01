@@ -30,11 +30,9 @@ class Application
 
     public function run()
     {
-        echo memory_get_usage().PHP_EOL;
         $longPoll = new LongPolling();
         $longPoll->getLongPollingServer();
         while (!$longPoll->checkError()) {
-            echo 'Before iteration: '.memory_get_usage().PHP_EOL;
             $this->preResolveActions();
             $event = $longPoll->getEvent();
             // Ключ устарел - повторная генерация.
@@ -51,7 +49,6 @@ class Application
                 $this->sendCompiled($resolve);
             }
             $this->postResolveActions($resolver->getPeerId(), $resolver->getSenderId());
-            echo 'After iteration: '.memory_get_usage().PHP_EOL;
         }
     }
 
