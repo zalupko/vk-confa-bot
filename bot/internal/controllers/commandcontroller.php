@@ -8,16 +8,18 @@ use Bot\Commands\TestCommand;
 class CommandController
 {
     private static $commands = array(
-        'test' => TestCommand::class,
-        'тест' => TestCommand::class
+        TestCommand::class => array(
+            'test', 'тест', 'конфа тест', 'конфа test'
+        )
     );
 
     private static function determineCommand($string)
     {
-        foreach (self::$commands as $name => $class)
-        {
-            if (strpos($string, $name) !== false) {
-                return $class;
+        foreach (self::$commands as $class => $names) {
+            foreach ($names as $name) {
+                if (strpos($string, $name) === 0) {
+                    return $class;
+                }
             }
         }
         return false;

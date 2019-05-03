@@ -1,6 +1,7 @@
 <?php
 namespace Bot\Orm\Table;
 
+use Bot\Internal\Tools\Logger;
 use Bot\Orm\DB;
 use Bot\Orm\Entity;
 use Bot\Orm\Error\SqlQueryException;
@@ -46,7 +47,7 @@ abstract class BaseTable
         }
         $objects = array();
         while ($data = $fetch->fetch_assoc()) {
-            $objects[] = new $this->entity_name($data, $this);
+            $objects[] = new Entity($data, $this);
         }
         return $objects;
     }
@@ -94,6 +95,7 @@ abstract class BaseTable
         $object = $this->fetchSingle(static::ID, $lastId);
         return $object;
     }
+
     public function create()
     {
         $map = $this->getMap();
@@ -110,6 +112,9 @@ abstract class BaseTable
             if (isset($properties['primary']) && $properties['primary'] == true) {
                 $column[] = 'PRIMARY KEY';
             }
+            if (isset($properties['unique']) && $properties['unique'] === true) {
+                $column[] = 'UNIQUE';
+            }
             if (isset($properties['default'])) {
                 $column[] = 'DEFAULT '.$properties['default'];
             }
@@ -121,14 +126,11 @@ abstract class BaseTable
         $columns = implode(', ', $columns);
         $query = sprintf($template, $this->table_name, $columns);
         $result = DB::query($query);
+        Logger::log('Created table from '.$this->table_name.' successfully', Logger::DEBUG);
         return $result;
     }
 
-    protected function getMap()
-    {
-        $map = array();
-        return $map;
-    }
+    abstract protected function getMap();
 
     protected function getLastId()
     {

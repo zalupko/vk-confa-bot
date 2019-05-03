@@ -1,7 +1,7 @@
 <?php
 namespace Bot;
 
-use Bot\Internal\Tools\Config;
+use RuntimeException;
 use Bot\Internal\Tools\Debug;
 use Bot\Orm\DB;
 use Bot\Vk\Client;
@@ -15,7 +15,10 @@ class Application
 
     public function __construct()
     {
-        //DB::connect();
+        DB::connect();
+        if (!DB::dbExists()) {
+            throw new RuntimeException('DB is not installed! Run install.php');
+        }
     }
 
     public function run()
@@ -29,7 +32,6 @@ class Application
             }
             if (!empty($update)) {
                 Debug::dump($update, 'RECEIVED_EVENT', true);
-                $this->checkPeer($update);
                 $event = new Event($update);
                 $command = CommandController::getCommandObject($event);
                 if ($command) {
@@ -54,13 +56,8 @@ class Application
     public function checkInterface()
     {
         if (php_sapi_name() !== self::INTERFACE_NAME) {
-            throw new \Exception(self::INTERFACE_ERROR);
+            throw new RuntimeException(self::INTERFACE_ERROR);
         }
-    }
-
-    private function checkPeer($update)
-    {
-
     }
 
     private function sendMessage($message)
@@ -71,6 +68,6 @@ class Application
 
     public function __destruct()
     {
-        //DB::disconnect();
+        DB::disconnect();
     }
 }

@@ -12,7 +12,7 @@ class Users extends BaseTable
 
     protected $table_name = 'vcb_users';
 
-    public function getMap()
+    protected function getMap()
     {
         $map = array(
             self::ID => array(
@@ -22,6 +22,11 @@ class Users extends BaseTable
             ),
             self::VK_ID => array(
                 'type' => 'INT',
+                'unique' => true,
+                'null' => false
+            ),
+            self::VK_NAME => array(
+                'type' => 'VARCHAR(255)',
                 'null' => false
             ),
             self::LAST_BATTLE => array(
