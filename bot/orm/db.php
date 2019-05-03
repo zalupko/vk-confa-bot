@@ -4,6 +4,7 @@ namespace Bot\Orm;
 use Bot\Orm\Error\SqlConnectionException;
 use Bot\Orm\Error\SqlQueryException;
 use mysqli;
+use mysqli_result;
 use Bot\Internal\Tools\Config;
 
 /**
@@ -34,21 +35,22 @@ class DB
 
     /**
      * @param string $query
-     * @throws SqlConnectionException
+     * @return SqlQueryException|mysqli_result
      */
     public static function query($query)
     {
         $result = self::$connection->query($query);
         if ($result === false) {
-            throw new SqlConnectionException(
-                self::$connection->connect_error,
-                self::$connection->connect_errno
+            return new SqlQueryException(
+                self::$connection->error,
+                self::$connection->errno
             );
         }
+        return $result;
     }
 
     /**
-     * @throws SqlConnectionException
+     * Enconding to UTF-8 is required because of russian characters in charset
      */
     public static function createDatabase()
     {

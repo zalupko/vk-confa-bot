@@ -8,7 +8,8 @@ use Bot\Commands\TestCommand;
 class CommandController
 {
     private static $commands = array(
-        'test' => TestCommand::class
+        'test' => TestCommand::class,
+        'тест' => TestCommand::class
     );
 
     private static function determineCommand($string)
@@ -33,6 +34,7 @@ class CommandController
             return false;
         }
         $data = array(
+            'peer' => $event->getPeer(),
             'sender' => $event->getSender(),
             'mention' => $event->getMention(),
             'date' => $event->getDate()

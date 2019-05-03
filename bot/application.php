@@ -1,8 +1,10 @@
 <?php
 namespace Bot;
 
+use Bot\Internal\Tools\Config;
 use Bot\Internal\Tools\Debug;
 use Bot\Orm\DB;
+use Bot\Vk\Client;
 use Bot\Vk\Event;
 use Bot\Internal\Controllers\CommandController;
 
@@ -10,6 +12,7 @@ class Application
 {
     const INTERFACE_NAME = 'cli';
     const INTERFACE_ERROR = 'Script cannot be run not from command-line interface';
+
     public function __construct()
     {
         //DB::connect();
@@ -26,13 +29,13 @@ class Application
             }
             if (!empty($update)) {
                 Debug::dump($update, 'RECEIVED_EVENT', true);
+                $this->checkPeer($update);
                 $event = new Event($update);
                 $command = CommandController::getCommandObject($event);
-                $message = 'Не понял...';
                 if ($command) {
                     $message = $command->execute();
+                    $this->sendMessage($message);
                 }
-                $this->sendMessage($message);
             }
             $this->postResolveActions();
         }
@@ -55,9 +58,15 @@ class Application
         }
     }
 
-    private function sendMessage($message)
+    private function checkPeer($update)
     {
 
+    }
+
+    private function sendMessage($message)
+    {
+        $message['random_id'] = mt_rand();
+        Client::send(Client::URL, Client::MESSAGE_SEND, $message, true);
     }
 
     public function __destruct()

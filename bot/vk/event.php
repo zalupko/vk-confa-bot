@@ -1,6 +1,13 @@
 <?php
 namespace Bot\Vk;
 
+use Bot\Internal\Tools\Formatter;
+
+/**
+ * Class Event
+ * Prepares event for CommandController
+ * @package Bot\Vk
+ */
 class Event
 {
     const MENTION_PATTERN = '/\[([^\|]+)\|/';
@@ -12,10 +19,10 @@ class Event
 
     public function __construct($event)
     {
-        $this->text = $event->text;
-        $this->date = $event->date;
-        $this->sender = $event->from_id;
-        $this->peer = $event->peer_id;
+        $this->text = Formatter::tolower($event->object->text);
+        $this->date = $event->object->date;
+        $this->sender = $event->object->from_id;
+        $this->peer = $event->object->peer_id;
     }
 
     private function findMention($text)
