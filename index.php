@@ -10,7 +10,7 @@ try {
     $application->checkInterface();
     $application->run();
 } catch (Throwable $error) {
-    //Debug::dump($error, 'CAUGHT_ERROR', true);
+    Debug::dump($error, 'CAUGHT_ERROR');
     Logger::log($error->getMessage(), Logger::ERROR);
     Logger::closeFile();
 }

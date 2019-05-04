@@ -34,7 +34,7 @@ class DB
         $dbhost = Config::getOption('DBHOST');
         self::$dbname = Config::getOption('DBNAME');
         self::$connection = new mysqli($dbhost, $dblogin, $dbpassword);
-        Logger::log('Established connection to mysql server', Logger::DEBUG);
+        Logger::log('DB: Established connection to mysql server', Logger::DEBUG);
 
         if (self::$connection->connect_error) {
             throw new SqlConnectionException(
@@ -47,7 +47,7 @@ class DB
     public static function disconnect()
     {
         self::$connection->close();
-        Logger::log('Disconnected from mysql server', Logger::DEBUG);
+        Logger::log('DB: Disconnected from mysql server', Logger::DEBUG);
     }
 
     /**
@@ -74,7 +74,7 @@ class DB
         $query = 'CREATE DATABASE '.self::$dbname.' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;';
         self::query($query);
         self::$connection->select_db(self::$dbname);
-        Logger::log('Installed database successfully', Logger::DEBUG);
+        Logger::log('DB: Installed database successfully', Logger::DEBUG);
     }
 
     /**
@@ -99,7 +99,7 @@ class DB
         if (!isset(self::$table_cache[$tableName])) {
             self::$table_cache[$tableName] = new $tableName();
         }
-        Logger::log('Created object of '.$tableName, Logger::DEBUG);
+        Logger::log('DB: Created object of '.$tableName, Logger::DEBUG);
         return self::$table_cache[$tableName];
     }
 }
