@@ -11,10 +11,20 @@ abstract class BaseTable
     const ID = 'id';
     protected $table_name;
 
-    public function fetchSingle($column, $value)
+    /**
+     * Fetches only one object with "... WHERE $column $condition '$value'" query
+     * In case of getting more that one object in result - returns the latest
+     * TODO: add sorting
+     * @param string $column
+     * @param string $value
+     * @param string $condition
+     * @return bool|Entity
+     * @throws SqlQueryException
+     */
+    public function fetchSingle($column, $value, $condition = '=')
     {
-        $template = "SELECT * FROM %s WHERE %s = '%s';";
-        $query = sprintf($template, $this->table_name, $column, $value);
+        $template = "SELECT * FROM %s WHERE %s %s '%s';";
+        $query = sprintf($template, $this->table_name, $column, $condition, $value);
         $fetch = DB::query($query);
         if ($fetch instanceof SqlQueryException) {
             throw $fetch;
@@ -27,20 +37,26 @@ abstract class BaseTable
         return $object;
     }
 
-    public function fetchMany($column, $values) {
+    /**
+     * Allows fetching by many conditions (multiple columns, multiple values, multiple conditions)
+     * @param $data
+     * @return array|null
+     * @throws SqlQueryException
+     */
+    public function fetchMany($data) {
         $template = 'SELECT * FROM %s WHERE %s';
-        if (!is_array($values)) {
-            $values = array($values);
-        }
-        $condition = array();
-        foreach ($values as $value) {
-            $condition[] = sprintf('%s = "%s"', $column, $value);
+        $conditions = array();
+        foreach ($data as $instance) {
+            $column = $instance['column'];
+            $value = $instance['value'];
+            $condition = isset($instance['condition']) ? $instance['condition'] : '=';
+            $conditions[] = sprintf("%s %s '%s'", $column, $condition, $value);
         }
         if (empty($condition)) {
             return null;
         }
-        $condition = implode(' OR ', $condition);
-        $query = sprintf($template, $this->table_name, $condition);
+        $conditions = implode(' OR ', $conditions);
+        $query = sprintf($template, $this->table_name, $conditions);
         $fetch = DB::query($query);
         if ($fetch instanceof SqlQueryException) {
             throw $fetch;
@@ -72,7 +88,7 @@ abstract class BaseTable
 
     /**
      * @param $data
-     * @return BaseEntity|bool instance of entity or false
+     * @return Entity|bool instance of entity or false
      * @throws SqlQueryException
      */
     public function add($data)
@@ -145,7 +161,7 @@ abstract class BaseTable
 
     public function delete($entity)
     {
-        $entityId = $entity->get(Users::ID);
+        $entityId = $entity->get(static::ID);
         $template = 'DELETE FROM %s WHERE %s = "%s";';
         $query = sprintf($template, $this->table_name, Users::ID, $entityId);
         $result = DB::query($query);
