@@ -30,10 +30,10 @@ abstract class Base
 
     /**
      * @param string $message
-     * @param string $attachment
+     * @param array $attachment
      * @return array $data - message prepared for messages.send VK API method
      */
-    protected function getCompiled($message, $attachment)
+    protected function getCompiled($message, $attachment = array())
     {
         $data = array(
             'peer_id' => $this->peer,
@@ -42,4 +42,5 @@ abstract class Base
         );
         return $data;
     }
+
 }

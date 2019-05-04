@@ -1,6 +1,9 @@
 <?php
 namespace Bot\Orm\Table;
 
+use Bot\Orm\DB;
+use Bot\Orm\Error\SqlQueryException;
+
 class Users extends BaseTable
 {
     const VK_ID = 'vk_user_id';
@@ -47,5 +50,25 @@ class Users extends BaseTable
             )
         );
         return $map;
+    }
+
+    public function add($data)
+    {
+        $template = 'INSERT IGNORE INTO %s (%s) VALUES (%s);';
+        $columns = array();
+        $values = array();
+        foreach ($data as $column => $value) {
+            $columns[] = $column;
+            $values[] = "'".$value."'";
+        }
+        $columns = implode(', ', $columns);
+        $values = implode(', ', $values);
+        $query = sprintf($template, $this->table_name, $columns, $values);
+        $result = DB::query($query);
+        if ($result instanceof SqlQueryException) {
+            throw $result;
+        }
+        $lastId = $this->getLastId();
+        return $lastId;
     }
 }

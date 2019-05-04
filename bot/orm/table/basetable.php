@@ -13,15 +13,15 @@ abstract class BaseTable
 
     /**
      * Fetches only one object with "... WHERE $column $condition '$value'" query
-     * In case of getting more that one object in result - returns the latest
-     * TODO: add sorting
+     * TODO: add sorting modifiers
      * @param string $column
      * @param string $value
      * @param string $condition
-     * @return bool|Entity
+     * @param bool $multiple - (Optional) true if should return array of objects, false if only one object should be returned
+     * @return Entity|array - see multiple
      * @throws SqlQueryException
      */
-    public function fetchSingle($column, $value, $condition = '=')
+    public function fetchSingle($column, $value, $condition = '=', $multiple = false)
     {
         $template = "SELECT * FROM %s WHERE %s %s '%s';";
         $query = sprintf($template, $this->table_name, $column, $condition, $value);
@@ -29,21 +29,27 @@ abstract class BaseTable
         if ($fetch instanceof SqlQueryException) {
             throw $fetch;
         }
-        $data = $fetch->fetch_assoc();
-        if ($data === null) {
-            return false;
+        if (!$multiple) {
+            $data = $fetch->fetch_assoc();
+            return new Entity($data, $this);
         }
-        $object = new Entity($data, $this);
-        return $object;
+        $objects = array();
+        while ($data = $fetch->fetch_assoc()) {
+            $objects[] = new Entity($data, $this);
+        }
+        return $objects;
     }
 
     /**
      * Allows fetching by many conditions (multiple columns, multiple values, multiple conditions)
-     * @param $data
-     * @return array|null
+     * Conditions are connected via OR logical operator by default. This value cannot be changed
+     * TODO: add logical connection modifier
+     * @param array $data
+     * @param bool $multiple - (Optional) true if should return array of objects, false if only one object should be returned
+     * @return Entity|array - See multiple
      * @throws SqlQueryException
      */
-    public function fetchMany($data) {
+    public function fetchMany($data, $multiple = false) {
         $template = 'SELECT * FROM %s WHERE %s';
         $conditions = array();
         foreach ($data as $instance) {
@@ -52,14 +58,15 @@ abstract class BaseTable
             $condition = isset($instance['condition']) ? $instance['condition'] : '=';
             $conditions[] = sprintf("%s %s '%s'", $column, $condition, $value);
         }
-        if (empty($condition)) {
-            return null;
-        }
         $conditions = implode(' OR ', $conditions);
         $query = sprintf($template, $this->table_name, $conditions);
         $fetch = DB::query($query);
         if ($fetch instanceof SqlQueryException) {
             throw $fetch;
+        }
+        if (!$multiple) {
+            $data = $fetch->fetch_assoc();
+            return new Entity($data, $this);
         }
         $objects = array();
         while ($data = $fetch->fetch_assoc()) {
@@ -88,7 +95,7 @@ abstract class BaseTable
 
     /**
      * @param $data
-     * @return Entity|bool instance of entity or false
+     * @return int|bool id of insertion or false otherwise
      * @throws SqlQueryException
      */
     public function add($data)
@@ -108,8 +115,7 @@ abstract class BaseTable
             throw $result;
         }
         $lastId = $this->getLastId();
-        $object = $this->fetchSingle(static::ID, $lastId);
-        return $object;
+        return $lastId;
     }
 
     public function create()
@@ -142,7 +148,7 @@ abstract class BaseTable
         $columns = implode(', ', $columns);
         $query = sprintf($template, $this->table_name, $columns);
         $result = DB::query($query);
-        Logger::log('Created table from '.$this->table_name.' successfully', Logger::DEBUG);
+        Logger::log('Created table '.$this->table_name.' successfully', Logger::DEBUG);
         return $result;
     }
 

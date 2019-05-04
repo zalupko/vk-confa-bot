@@ -7,11 +7,10 @@ class TestCommand extends Base
     {
         $cooldown = $this->checkCooldown($this->date, time());
         $message = 'Huest';
-        $attachment = null;
         if ($cooldown) {
             $message = 'Not time yet';
         }
-        return $this->getCompiled($message, $attachment);
+        return $this->getCompiled($message);
     }
 
     public function checkCooldown($last, $current)

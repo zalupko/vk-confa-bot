@@ -7,6 +7,7 @@ use Bot\Orm\DB;
 use Bot\Vk\Client;
 use Bot\Vk\Event;
 use Bot\Internal\Controllers\CommandController;
+use Bot\Internal\Controllers\SmilesController;
 
 class Application
 {
@@ -33,11 +34,26 @@ class Application
             if (!empty($update)) {
                 Debug::dump($update, 'RECEIVED_EVENT', true);
                 $event = new Event($update);
+                $messageTemplate = array(
+                    'message' => null,
+                    'attachment' => array()
+                );
                 $command = CommandController::getCommandObject($event);
+                $smiles = SmilesController::getSmiles($event);
                 if ($command) {
-                    $message = $command->execute();
-                    $this->sendMessage($message);
+                    $messageTemplate = $command->execute();
                 }
+                if ($smiles) {
+                    $messageTemplate['attachment'] = array_merge($messageTemplate['attachment'], $smiles);
+                }
+                $preparedMessage = array(
+                    'peer_id' => $event->getPeer(),
+                    'random_id' => mt_rand(),
+                    'message' => $messageTemplate['message'],
+                    'attachment' => implode(',', $messageTemplate['attachment'])
+                );
+                $this->sendMessage($preparedMessage);
+
             }
             $this->postResolveActions();
         }
@@ -60,9 +76,8 @@ class Application
         }
     }
 
-    private function sendMessage($message)
+    private function sendMessage($message = null, $smiles = null)
     {
-        $message['random_id'] = mt_rand();
         Client::send(Client::URL, Client::MESSAGE_SEND, $message, true);
     }
 

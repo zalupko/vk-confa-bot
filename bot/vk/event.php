@@ -1,6 +1,7 @@
 <?php
 namespace Bot\Vk;
 
+use Bot\Internal\Tools\Debug;
 use Bot\Internal\Tools\Formatter;
 
 /**
@@ -11,11 +12,13 @@ use Bot\Internal\Tools\Formatter;
 class Event
 {
     const MENTION_PATTERN = '/\[([^\|]+)\|/';
+    const SMILES_PATTERN = '/:([^:\s]*):/';
     private $sender;
     private $date;
     private $text;
     private $mention;
     private $peer;
+    private $smiles;
 
     public function __construct($event)
     {
@@ -62,5 +65,21 @@ class Event
     public function getPeer()
     {
         return $this->peer;
+    }
+
+    public function getSmiles()
+    {
+        if ($this->smiles === null) {
+            $this->findSmiles();
+        }
+        return $this->smiles;
+    }
+
+    private function findSmiles()
+    {
+        $text = $this->getText();
+        $split = explode(' ', $text);
+        $smiles = preg_grep(self::SMILES_PATTERN, $split);
+        $this->smiles = $smiles;
     }
 }

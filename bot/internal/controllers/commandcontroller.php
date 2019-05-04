@@ -4,12 +4,16 @@ namespace Bot\Internal\Controllers;
 use Bot\Commands\Base;
 use Bot\Vk\Event;
 use Bot\Commands\TestCommand;
+use Bot\Commands\SmileListCommand;
 
 class CommandController
 {
     private static $commands = array(
         TestCommand::class => array(
             'test', 'тест', 'конфа тест', 'конфа test'
+        ),
+        SmileListCommand::class => array(
+            'smiles', 'конфа смайлы'
         )
     );
 
@@ -39,7 +43,7 @@ class CommandController
             'peer' => $event->getPeer(),
             'sender' => $event->getSender(),
             'mention' => $event->getMention(),
-            'date' => $event->getDate()
+            'date' => $event->getDate(),
         );
         return new $class($data);
     }

@@ -2,9 +2,10 @@
 require_once('bot/internal/autoloader.php');
 use Bot\Orm\DB;
 use Bot\Orm\Table\Users;
-use \Bot\Orm\Table\Peers;
+use Bot\Orm\Table\Peers;
 use Bot\Orm\Table\Options;
 use Bot\Orm\Table\Responses;
+use Bot\Orm\Table\Smiles;
 
 use Bot\Internal\Tools\Debug;
 use Bot\Internal\Tools\Logger;
@@ -19,15 +20,23 @@ try {
     $options = DB::table(Options::class);
     $peers = DB::table(Peers::class);
     $responses = DB::table(Responses::class);
+    $smiles = DB::table(Smiles::class);
     $users = DB::table(Users::class);
 
     $options->create();
     $peers->create();
     $responses->create();
+    $smiles->create();
     $users->create();
     //endregion
     //region Installing preset data to the corresponding tables
-
+    $smilesData = array(
+        ':понятно:' => 'photo-180945331_456239019'
+    );
+    foreach ($smilesData as $name => $path) {
+        $data = array(Smiles::NAME => $name, Smiles::PATH => $path);
+        $smiles->add($data);
+    }
     //endregion
     DB::disconnect();
 } catch (Throwable $error) {
